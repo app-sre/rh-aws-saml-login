@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+     <title>SAML HTTP Post Binding</title>
+  </head>
+  <body Onload="document.forms[0].submit()">
+        <form name="saml-post-binding" method="post" action="http://localhost:8000/aws-sso.html">
+                <input type="hidden" name="SAMLResponse" value="fake-saml-token"/>
+
+            <noscript>
+                <p>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue. </p>
+                <input type="submit" value="Continue"/>
+            </noscript>
+        </form>
+</body>
+</html>

@@ -1,0 +1,73 @@
+[tool.poetry]
+name = "rh-aws-saml-login"
+version = "0.1.0"
+description = "A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP"
+authors = ["Christian Assing <cassing@redhat.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "rh_aws_saml_login" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+requests-kerberos = "^0.14.0"
+iterfzf = "^1.1.0.44.0"
+typer = "^0.9.0"
+rich = "^13.7.0"
+pyquery = "^2.0.0"
+boto3 = "^1.34.37"
+tzlocal = "^5.2"
+humanize = "^4.9.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+types-requests = "^2.31.0.20240125"
+pytest = "^8.0.0"
+mypy = "^1.8.0"
+requests-mock = "^1.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+rh-aws-saml-login = 'rh_aws_saml_login.__main__:app'
+
+[tool.ruff]
+line-length = 88
+target-version = 'py311'
+required-version = "0.2.1"
+src = ["rh_aws_saml_login"]
+extend-exclude = [".local", ".cache"]
+fix = true
+
+[tool.ruff.lint]
+preview = true
+# defaults are ["E4", "E7", "E9", "F"]
+extend-select = [
+    # flake8 default rules
+    "E1", # preview rule
+    "E2", # preview rule
+    "W",
+    # isort
+    "I",
+    # pylint
+    "PL",
+]
+
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["rh_aws_saml_login"]
+
+[[tool.mypy.overrides]]
+# Below are all of the packages that don't implement stub packages. Mypy will throw an error if we don't ignore the
+# missing imports. See: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+module = [
+    "requests_kerberos.*",
+    "iterfzf.*",
+    "botocore.*",
+    "boto3.*",
+    "pyquery.*",
+]
+ignore_missing_imports = true
