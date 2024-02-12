@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Amazon Web Services Sign-In</title>
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body>
+        <div id="container">
+            <h1 class="background">Amazon Web Services Login</h1>
+
+            <div id="content">
+                <div id="main_error"></div>
+
+                <form id="saml_form" name="saml_form" action="/saml" method="post">
+                    <input type="hidden" name="RelayState" value="" />
+                    <input type="hidden" name="SAMLResponse" value="fake-saml-token" />
+                    <input type="hidden" name="name" value="" />
+                    <input type="hidden" name="portal" value="" />
+                    <p style="font-size: 16px; padding-left: 20px;">Select a role:</p>
+                    <fieldset>
+                        <div class="saml-account">
+                            <div class="expandable-container" data-accountIndex="0">
+                                <img id="image0" src="/static/image/down.png" valign="middle"></img>
+                                <div class="saml-account-name">Account: account-1 (1234567890)</div>
+                            </div>
+                            <hr style="border: 1px solid #ddd;">
+                            <div id="0" class="saml-account">
+                                <div class="saml-role clickable-radio">
+                                    <input type="radio" name="roleIndex" value="arn:aws:iam::1234567890:role/admin-role"
+                                        class="saml-radio" id="arn:aws:iam::1234567890:role/admin-role" />
+                                    <label for="arn:aws:iam::1234567890:role/admin-role"
+                                        class="saml-role-description">admin-role</label>
+                                    <span style="clear: both;"></span>
+                                </div>
+                                <div class="saml-role clickable-radio">
+                                    <input type="radio" name="roleIndex" value="arn:aws:iam::1234567890:role/read-only"
+                                        class="saml-radio" id="arn:aws:iam::1234567890:role/read-only" />
+                                    <label for="arn:aws:iam::1234567890:role/read-only"
+                                        class="saml-role-description">read-only</label>
+                                    <span style="clear: both;"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="saml-account">
+                            <div class="expandable-container" data-accountIndex="0">
+                                <img id="image0" src="/static/image/down.png" valign="middle"></img>
+                                <div class="saml-account-name">Account: account-2 (5432167890)</div>
+                            </div>
+                            <hr style="border: 1px solid #ddd;">
+                            <div id="0" class="saml-account">
+                                <div class="saml-role clickable-radio">
+                                    <input type="radio" name="roleIndex" value="arn:aws:iam::5432167890:role/admin-role"
+                                        class="saml-radio" id="arn:aws:iam::5432167890:role/admin-role" />
+                                    <label for="arn:aws:iam::5432167890:role/admin-role"
+                                        class="saml-role-description">admin-role</label>
+                                    <span style="clear: both;"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="saml-account">
+                            <div class="expandable-container" data-accountIndex="39">
+                                <img id="image39" src="/static/image/down.png" valign="middle"></img>
+                                <div class="saml-account-name">Account: 987654321</div>
+                            </div>
+                            <hr style="border: 1px solid #ddd;">
+                            <div id="39" class="saml-account">
+                                <div class="saml-role clickable-radio">
+                                    <input type="radio" name="roleIndex"
+                                        value="arn:aws:iam::987654321:role/987654321-admin" class="saml-radio"
+                                        id="arn:aws:iam::987654321:role/987654321-admin" />
+                                    <label for="arn:aws:iam::987654321:role/987654321-admin"
+                                        class="saml-role-description">987654321-admin</label>
+                                    <span style="clear: both;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <br>
+                    <div class="buttoninput" id="input_signin_button">
+                        <a id="signin_button" rel="noopener noreferrer" class="css3button" href="#" alt="Continue"
+                            value="Continue">Sign in</a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </body>
+</html>
