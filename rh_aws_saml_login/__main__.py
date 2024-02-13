@@ -19,7 +19,7 @@ BANNER = r"""
 def cli(  # noqa: PLR0913, PLR0917
     account_name: str = typer.Argument(
         None,
-        help="AWS account name. '.' as short cut to use $AWS_ACCOUNT_NAME.",
+        help="AWS account name. '.' as shortcut to use $AWS_ACCOUNT_NAME.",
     ),
     region: str = typer.Option("us-east-1", help="AWS region"),
     debug: bool = typer.Option(False, help="Enable debug mode"),
