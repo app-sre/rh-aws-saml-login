@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 (unreleased)
+
+### Bug Fixes
+
+* Fix project URLs in [PyPI](https://pypi.org/project/rh-aws-saml-login/)
+
 ## 0.2.0 (2024-02-13)
 
 ### Features
