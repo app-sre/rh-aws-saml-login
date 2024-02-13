@@ -1,8 +1,10 @@
+import json
 import logging
 import os
 import re
 import subprocess
 import sys
+import urllib
 from dataclasses import dataclass
 from datetime import datetime as dt
 from textwrap import dedent
@@ -173,15 +175,44 @@ def open_aws_shell(account: AwsAccount, credentials: AwsCredentials, region: str
     )
 
 
-def open_aws_console(saml_url: str) -> None:
-    run(["open", saml_url], check=False, capture_output=False)
+def open_aws_console(account: AwsAccount, credentials: AwsCredentials) -> None:
+    """Open the AWS console in a browser.
+
+    See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-custom-url.html
+    """
+    aws_federated_signin_endpoint = "https://signin.aws.amazon.com/federation"
+    # Get a sign-in token from the AWS sign-in federation endpoint.
+    response = requests.get(
+        aws_federated_signin_endpoint,
+        params={
+            "Action": "getSigninToken",
+            # 12 hours
+            "SessionDuration": "43200",
+            "Session": json.dumps({
+                "sessionId": credentials.access_key,
+                "sessionKey": credentials.secret_key,
+                "sessionToken": credentials.session_token,
+            }),
+        },
+    )
+    signin_token = json.loads(response.text)
+
+    # Make a federated URL that can be used to sign into the AWS Management Console.
+    query_string = urllib.parse.urlencode({
+        "Action": "login",
+        "Issuer": "redhat.com",
+        "Destination": "https://console.aws.amazon.com/",
+        "SigninToken": signin_token["SigninToken"],
+    })
+    federated_url = f"{aws_federated_signin_endpoint}?{query_string}"
+    run(["open", federated_url], check=False, capture_output=False)
 
 
 def main(  # noqa: PLR0913, PLR0917
     account_name: str | None,
     region: str,
     debug: bool,
-    open_in_browser: bool,
+    console: bool,
     saml_url: str,
 ):
     logging.basicConfig(
@@ -189,11 +220,6 @@ def main(  # noqa: PLR0913, PLR0917
     )
     if debug:
         enable_requests_logging()
-
-    if open_in_browser:
-        open_aws_console(saml_url=saml_url)
-        bye()
-        sys.exit(0)
 
     with Progress(
         SpinnerColumn(finished_text="✅"),
@@ -217,6 +243,9 @@ def main(  # noqa: PLR0913, PLR0917
         aws_accounts = get_aws_accounts(aws_url, saml_token)
 
         progress.stop()
+        if account_name == ".":
+            # account name can be passed as a dot to open the console for the previously selected account
+            account_name = os.environ.get("AWS_ACCOUNT_NAME")
         account = select_aws_account(aws_accounts, account_name)
         progress.start()
         if not account:
@@ -231,5 +260,8 @@ def main(  # noqa: PLR0913, PLR0917
         credentials = assume_role_with_saml(account, saml_token)
         progress.update(task, completed=1)
 
-    open_aws_shell(account, credentials, region)
+    if console:
+        open_aws_console(account, credentials)
+    else:
+        open_aws_shell(account, credentials, region)
     bye()

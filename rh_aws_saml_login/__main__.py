@@ -17,10 +17,13 @@ BANNER = r"""
 
 @app.command(epilog="Made with :heart: by [blue]https://github.com/app-sre[/]")
 def cli(  # noqa: PLR0913, PLR0917
-    account_name: str = typer.Argument(None, help="AWS account name"),
+    account_name: str = typer.Argument(
+        None,
+        help="AWS account name. '.' as short cut to use $AWS_ACCOUNT_NAME.",
+    ),
     region: str = typer.Option("us-east-1", help="AWS region"),
     debug: bool = typer.Option(False, help="Enable debug mode"),
-    open_in_browser: bool = typer.Option(
+    console: bool = typer.Option(
         False, help="Open the AWS console in browser instead of a local shell"
     ),
     display_banner: bool = typer.Option(True, help="Display a shiny banner"),
@@ -35,7 +38,7 @@ def cli(  # noqa: PLR0913, PLR0917
         account_name=account_name,
         region=region,
         debug=debug,
-        open_in_browser=open_in_browser,
+        console=console,
         saml_url=saml_url,
     )
 
