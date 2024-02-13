@@ -49,13 +49,18 @@ class AwsCredentials:
     expiration: dt
 
 
-def kinit():
-    """Test for a valid kerberos ticket and acquire one if needed."""
+def is_kerberos_ticket_valid() -> bool:
+    """Test for a valid kerberos ticket."""
     try:
         run(["klist", "--test"], check=True)
+        return True
     except subprocess.CalledProcessError:
-        logging.info("No valid kerberos ticket found, acquiring one...")
-        run(["kinit"], check=True, capture_output=False)
+        return False
+
+
+def kinit():
+    """Acquire a kerberos ticket."""
+    run(["kinit"], check=True, capture_output=False)
 
 
 def get_saml_auth(url: str) -> tuple[str, str]:
@@ -197,7 +202,11 @@ def main(  # noqa: PLR0913, PLR0917
         task = progress.add_task(
             description="Test for a valid Kerberos ticket ...", total=1
         )
-        kinit()
+        if not is_kerberos_ticket_valid():
+            progress.stop()
+            logging.info("No valid Kerberos ticket found. Acquiring one ...")
+            kinit()
+            progress.start()
         progress.update(task, completed=1)
 
         task = progress.add_task(description="Getting SAML token ...", total=1)
