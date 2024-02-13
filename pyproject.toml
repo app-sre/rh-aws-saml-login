@@ -6,6 +6,9 @@ authors = ["Christian Assing <cassing@redhat.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "rh_aws_saml_login" }]
+homepage = "https://github.com/app-sre/rh-aws-saml-login"
+repository = "https://github.com/app-sre/rh-aws-saml-login"
+documentation = "https://github.com/app-sre/rh-aws-saml-login"
 
 [tool.poetry.dependencies]
 python = ">=3.11"
