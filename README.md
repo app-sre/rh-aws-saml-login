@@ -21,6 +21,12 @@ The `rh-aws-saml-login` CLI is a tool that simplifies the process of logging int
 
 ## Installation
 
+On CSB Fedora, you need to install the Kerberos development package:
+
+```shell
+sudo dnf install krb5-devel
+```
+
 You can install this library from [PyPI][pypi-link] with `pip`:
 
 ```shell
