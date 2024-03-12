@@ -24,11 +24,7 @@ from rich.progress import (
 )
 from tzlocal import get_localzone
 
-from rh_aws_saml_login.utils import (
-    bye,
-    enable_requests_logging,
-    run,
-)
+from rh_aws_saml_login.utils import bye, run
 
 
 @dataclass
@@ -209,18 +205,8 @@ def open_aws_console(account: AwsAccount, credentials: AwsCredentials) -> None:
 
 
 def main(  # noqa: PLR0913, PLR0917
-    account_name: str | None,
-    region: str,
-    debug: bool,
-    console: bool,
-    saml_url: str,
-):
-    logging.basicConfig(
-        level=logging.INFO if not debug else logging.DEBUG, format="%(message)s"
-    )
-    if debug:
-        enable_requests_logging()
-
+    account_name: str | None, region: str, console: bool, saml_url: str
+) -> list[str]:
     with Progress(
         SpinnerColumn(finished_text="✅"),
         TextColumn("[progress.description]{task.description}"),
@@ -265,3 +251,4 @@ def main(  # noqa: PLR0913, PLR0917
     else:
         open_aws_shell(account, credentials, region)
     bye()
+    return [acc.name for acc in aws_accounts]
