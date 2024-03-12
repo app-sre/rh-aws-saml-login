@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.2.1 (unreleased)
+## 0.3.0
+
+### Features
+
+* **AWS account name shell completion**: Add shell completion (bash/zsh/fish) for AWS account names.
 
 ### Bug Fixes
 

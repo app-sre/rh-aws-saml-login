@@ -68,6 +68,7 @@ rh-aws-saml-login currently provides the following features (get help with `-h` 
 - No configuration needed
 - Uses Kerberos authentication
 - Open the AWS web console for an account with the `--console` option
+- Shell auto-completion (bash, zsh, and fish) including AWS account names
 - Integrates nicely with the [starship](https://starship.rs)
 
   ```toml
