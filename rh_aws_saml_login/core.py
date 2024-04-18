@@ -56,7 +56,7 @@ def is_kerberos_ticket_valid() -> bool:
         return False
 
 
-def kinit():
+def kinit() -> None:
     """Acquire a kerberos ticket."""
     run(["kinit"], check=True, capture_output=False)
 
@@ -145,7 +145,9 @@ def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredential
     )
 
 
-def open_aws_shell(account: AwsAccount, credentials: AwsCredentials, region: str):
+def open_aws_shell(
+    account: AwsAccount, credentials: AwsCredentials, region: str
+) -> None:
     print(
         dedent(f"""
             Spawning a new shell. Use exit or CTRL+d to leave it!

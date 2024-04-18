@@ -25,13 +25,13 @@ def blend_text(
     return text
 
 
-def bye():
+def bye() -> None:
     print(
         "Thank you for using rh-aws-saml-login. :man_bowing: Have a great day ahead! :red_heart-emoji:"
     )
 
 
-def enable_requests_logging():
+def enable_requests_logging() -> None:
     from http.client import HTTPConnection  # noqa: PLC0415
 
     HTTPConnection.debuglevel = 1
