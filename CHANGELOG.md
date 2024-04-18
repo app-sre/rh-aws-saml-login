@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.3.0
 
 ### Features
