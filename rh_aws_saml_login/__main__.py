@@ -1,5 +1,6 @@
 import json
 import logging
+from collections.abc import Generator
 from pathlib import Path
 
 import typer
@@ -35,10 +36,9 @@ def read_accounts_cache() -> list[str]:
     return []
 
 
-def complete_account(ctx: typer.Context, incomplete: str):
-    names = ctx.params.get("account_name") or []
+def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None, None]:
     for name in read_accounts_cache():
-        if name.startswith(incomplete) and name not in names:
+        if name.startswith(incomplete):
             yield name
 
 
@@ -59,7 +59,7 @@ def cli(  # noqa: PLR0913, PLR0917
         "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
         help="SAML URL",
     ),
-):
+) -> None:
     """Login to AWS using SAML."""
     logging.basicConfig(
         level=logging.INFO if not debug else logging.DEBUG, format="%(message)s"
