@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import subprocess
 import sys
 import urllib
@@ -173,7 +174,7 @@ def open_aws_shell(
     )
 
 
-def open_aws_console(account: AwsAccount, credentials: AwsCredentials) -> None:
+def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
     """Open the AWS console in a browser.
 
     See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-custom-url.html
@@ -203,11 +204,15 @@ def open_aws_console(account: AwsAccount, credentials: AwsCredentials) -> None:
         "SigninToken": signin_token["SigninToken"],
     })
     federated_url = f"{aws_federated_signin_endpoint}?{query_string}"
-    run(["open", federated_url], check=False, capture_output=False)
+    run(shlex.split(open_command) + [federated_url], check=False, capture_output=False)
 
 
 def main(  # noqa: PLR0913, PLR0917
-    account_name: str | None, region: str, console: bool, saml_url: str
+    account_name: str | None,
+    region: str,
+    console: bool,
+    saml_url: str,
+    open_command: str,
 ) -> list[str]:
     with Progress(
         SpinnerColumn(finished_text="✅"),
@@ -249,7 +254,7 @@ def main(  # noqa: PLR0913, PLR0917
         progress.update(task, completed=1)
 
     if console:
-        open_aws_console(account, credentials)
+        open_aws_console(open_command, credentials)
     else:
         open_aws_shell(account, credentials, region)
     bye()
