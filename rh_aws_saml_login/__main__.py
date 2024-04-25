@@ -59,6 +59,11 @@ def cli(  # noqa: PLR0913, PLR0917
         "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
         help="SAML URL",
     ),
+    open_command: str = typer.Option(
+        "open",
+        help="Command to open the browser (e.g. 'xdg-open' on Linux)",
+        envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
+    ),
 ) -> None:
     """Login to AWS using SAML."""
     logging.basicConfig(
@@ -69,7 +74,11 @@ def cli(  # noqa: PLR0913, PLR0917
     if debug:
         enable_requests_logging()
     accounts = core.main(
-        account_name=account_name, region=region, console=console, saml_url=saml_url
+        account_name=account_name,
+        region=region,
+        console=console,
+        saml_url=saml_url,
+        open_command=open_command,
     )
     write_accounts_cache(accounts)
 
