@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+* `--open-command` option to open the AWS web console with a custom command.
+
 ## 0.3.1
 
 ### Chore
