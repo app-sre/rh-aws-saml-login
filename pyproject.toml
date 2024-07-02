@@ -12,7 +12,7 @@ documentation = "https://github.com/app-sre/rh-aws-saml-login"
 
 [tool.poetry.dependencies]
 python = ">=3.11"
-requests-kerberos = "^0.14.0"
+requests-kerberos = "^0.15.0"
 iterfzf = "^1.1.0.44.0"
 typer = "^0.9.0"
 rich = "^13.7.0"
