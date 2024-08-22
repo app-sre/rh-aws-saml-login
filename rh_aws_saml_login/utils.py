@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from rich import print
+from rich import print  # noqa: A004
 from rich.text import Text
 
 
@@ -43,6 +43,7 @@ def enable_requests_logging() -> None:
 
 def run(
     cmd: list[str] | str,
+    *,
     shell: bool = False,
     check: bool = True,
     capture_output: bool = True,
@@ -51,6 +52,6 @@ def run(
     shell_env = copy.deepcopy(os.environ)
     if env:
         shell_env.update(env)
-    return subprocess.run(
+    return subprocess.run(  # noqa: S603
         cmd, shell=shell, check=check, env=shell_env, capture_output=capture_output
     )

@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 from requests_mock import Mocker as RequestsMocker
@@ -16,8 +17,7 @@ def fx() -> Callable:
     """Return a function to read fixture files."""
 
     def _fx(filename: str) -> str:
-        with open(f"tests/fixtures/{filename}", encoding="locale") as f:
-            return f.read()
+        return Path(f"tests/fixtures/{filename}").read_text(encoding="locale")
 
     return _fx
 
@@ -60,7 +60,7 @@ def test_get_saml_auth(requests_mock: RequestsMocker, fx: Callable) -> None:
     requests_mock.get(url, text=fx("saml.html"))
     aws_url, saml_token = get_saml_auth(url)
     assert aws_url == "http://localhost:8000/aws-sso.html"
-    assert saml_token == "fake-saml-token"
+    assert saml_token == "fake-saml-token"  # noqa: S105
 
 
 def test_get_aws_accounts(
@@ -68,7 +68,7 @@ def test_get_aws_accounts(
 ) -> None:
     """Test get_aws_accounts."""
     url = "https://example.com"
-    saml_token = "fake-saml"
+    saml_token = "fake-saml"  # noqa: S105
     requests_mock.post(url, text=fx("aws-sso.html"))
 
     assert get_aws_accounts(url, saml_token) == accounts

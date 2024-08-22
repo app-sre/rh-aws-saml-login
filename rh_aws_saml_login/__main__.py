@@ -4,7 +4,7 @@ from collections.abc import Generator
 from pathlib import Path
 
 import typer
-from rich import print
+from rich import print  # noqa: A004
 
 from rh_aws_saml_login import core
 from rh_aws_saml_login.utils import blend_text, enable_requests_logging
@@ -36,25 +36,20 @@ def read_accounts_cache() -> list[str]:
     return []
 
 
-def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None, None]:
+def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None, None]:  # noqa: ARG001
     for name in read_accounts_cache():
         if name.startswith(incomplete):
             yield name
 
 
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
-def cli(  # noqa: PLR0913, PLR0917
+def cli(  # noqa: PLR0913
     account_name: str = typer.Argument(
         None,
         help="AWS account name. '.' as shortcut to use $AWS_ACCOUNT_NAME.",
         autocompletion=complete_account,
     ),
     region: str = typer.Option("us-east-1", help="AWS region"),
-    debug: bool = typer.Option(False, help="Enable debug mode"),
-    console: bool = typer.Option(
-        False, help="Open the AWS console in browser instead of a local shell"
-    ),
-    display_banner: bool = typer.Option(True, help="Display a shiny banner"),
     saml_url: str = typer.Option(
         "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
         help="SAML URL",
@@ -64,6 +59,12 @@ def cli(  # noqa: PLR0913, PLR0917
         help="Command to open the browser (e.g. 'xdg-open' on Linux)",
         envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
     ),
+    *,
+    debug: bool = typer.Option(default=False, help="Enable debug mode"),
+    console: bool = typer.Option(
+        default=False, help="Open the AWS console in browser instead of a local shell"
+    ),
+    display_banner: bool = typer.Option(default=True, help="Display a shiny banner"),
 ) -> None:
     """Login to AWS using SAML."""
     logging.basicConfig(
