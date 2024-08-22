@@ -14,7 +14,7 @@ documentation = "https://github.com/app-sre/rh-aws-saml-login"
 python = ">=3.11"
 requests-kerberos = "^0.15.0"
 iterfzf = "^1.1.0.44.0"
-typer = "^0.9.0"
+typer = "^0.12.4"
 rich = "^13.7.0"
 pyquery = "^2.0.0"
 boto3 = "^1.34.37"
@@ -22,11 +22,11 @@ tzlocal = "^5.2"
 humanize = "^4.9.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.3.7"
 types-requests = "^2.31.0.20240125"
 pytest = "^8.0.0"
 mypy = "^1.8.0"
 requests-mock = "^1.11.0"
+ruff = "^0.6.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -38,23 +38,39 @@ rh-aws-saml-login = 'rh_aws_saml_login.__main__:app'
 [tool.ruff]
 line-length = 88
 target-version = 'py311'
-required-version = "0.3.7"
+required-version = "0.6.1"
 src = ["rh_aws_saml_login"]
 extend-exclude = [".local", ".cache"]
 fix = true
 
 [tool.ruff.lint]
 preview = true
-# defaults are ["E4", "E7", "E9", "F"]
-extend-select = [
-    # flake8 default rules
-    "E1", # preview rule
-    "E2", # preview rule
-    "W",
-    # isort
-    "I",
-    # pylint
-    "PL",
+select = ["ALL"]
+ignore = [
+    "CPY",  # Missing copyright header
+    "D100", # Missing docstring in public module
+    "D104", # Missing docstring in public package
+    "D107", # Missing docstring in __init__
+    "D203", # 1 blank line required before class docstring
+    "D211", # No blank lines allowed before class docstring
+    "D212", # multi-line-summary-first-line
+    "D213", # multi-line-summary-second-line
+    "D4",   # Doc string style
+    "E501", # Line too long
+    "S101", # Use of assert detected. Pytest uses assert
+    # pydoclint
+    "DOC",
+    # May conflict with the formatter, https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q",
+    "COM812",
+    "COM819",
+    "ISC001",
 ]
 
 [tool.ruff.format]
