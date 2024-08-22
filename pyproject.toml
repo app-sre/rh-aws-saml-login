@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rh-aws-saml-login"
-version = "0.3.3"
+version = "0.3.4"
 description = "A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP"
 authors = ["Christian Assing <cassing@redhat.com>"]
 license = "MIT"
