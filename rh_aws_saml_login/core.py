@@ -15,9 +15,9 @@ import botocore
 import humanize
 import requests
 from iterfzf import iterfzf
-from pyquery import PyQuery as pq
+from pyquery import PyQuery as pq  # noqa: N813
 from requests_kerberos import OPTIONAL, HTTPKerberosAuth
-from rich import print
+from rich import print  # noqa: A004
 from rich.progress import (
     Progress,
     SpinnerColumn,
@@ -75,7 +75,7 @@ def get_saml_auth(url: str) -> tuple[str, str]:
 
 
 def get_aws_accounts(aws_url: str, saml_token: str) -> list[AwsAccount]:
-    r = requests.post(aws_url, data={"SAMLResponse": saml_token})
+    r = requests.post(aws_url, data={"SAMLResponse": saml_token}, timeout=10)
     r.raise_for_status()
     p = pq(r.text).xhtml_to_html()
     accounts = p("div.saml-account")
@@ -88,7 +88,7 @@ def get_aws_accounts(aws_url: str, saml_token: str) -> list[AwsAccount]:
         name = account.find(".saml-account-name").text()
         if not name:
             continue
-        # "Account: foobar (123456789)" or "Account: 123456789"
+        # "Account: foobar (123456789)" or just with the ID "Account: 123456789"
         name = re.split(r"\s+", name)[1]
         role_labels = account.find(".saml-role").find("label")
         for role_label in role_labels.items():
@@ -118,7 +118,7 @@ def select_aws_account(
         if not selected_item:
             sys.exit(0)
         account_name, role = re.split(r"\s+", selected_item, maxsplit=1)
-    account = next(
+    return next(
         (
             a
             for a in aws_accounts
@@ -126,7 +126,6 @@ def select_aws_account(
         ),
         None,
     )
-    return account
 
 
 def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredentials:
@@ -193,6 +192,7 @@ def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
                 "sessionToken": credentials.session_token,
             }),
         },
+        timeout=10,
     )
     signin_token = json.loads(response.text)
 
@@ -204,15 +204,16 @@ def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
         "SigninToken": signin_token["SigninToken"],
     })
     federated_url = f"{aws_federated_signin_endpoint}?{query_string}"
-    run(shlex.split(open_command) + [federated_url], check=False, capture_output=False)
+    run([*shlex.split(open_command), federated_url], check=False, capture_output=False)
 
 
-def main(  # noqa: PLR0913, PLR0917
+def main(
     account_name: str | None,
     region: str,
-    console: bool,
     saml_url: str,
     open_command: str,
+    *,
+    console: bool,
 ) -> list[str]:
     with Progress(
         SpinnerColumn(finished_text="✅"),
