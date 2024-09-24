@@ -51,7 +51,7 @@ class AwsCredentials:
 def is_kerberos_ticket_valid() -> bool:
     """Test for a valid kerberos ticket."""
     try:
-        run(["klist", "--test"], check=True)
+        run(["klist", "-s"], check=True)
         return True
     except subprocess.CalledProcessError:
         return False
