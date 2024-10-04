@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.0
+
+### Bug Fixes
+
+* Fix kerberos ticket test on Linux (#18)
+
+### Features
+
+* Add `--version` option (#16)
+
+### Chore
+
+* Mention [uv](https://docs.astral.sh/uv/) as the recommended installation method.
+* Replace poetry with [uv](https://docs.astral.sh/uv/) for the project management.
+* Upgrade dependencies
+
 ## 0.3.4
 
 * Upgrade dependencies
