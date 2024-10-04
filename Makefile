@@ -6,6 +6,7 @@ UV_PUBLISH_PASSWORD := $(TWINE_PASSWORD)
 export UV_PUBLISH_USERNAME
 export UV_PUBLISH_PASSWORD
 
+UV_RUN := uv run --frozen
 tapes = $(wildcard demo/*.tape)
 gifs = $(tapes:%.tape=%.gif)
 
@@ -15,8 +16,8 @@ all:
 	@echo $(patsubst %.tape,%.c,$(tape_files))
 
 format:
-	uv run ruff check
-	uv run ruff format
+	$(UV_RUN) ruff check
+	$(UV_RUN) ruff format
 .PHONY: format
 
 pr-check:
@@ -24,10 +25,10 @@ pr-check:
 .PHONY: pr-check
 
 test:
-	uv run ruff check --no-fix
-	uv run ruff format --check
-	uv run mypy $(DIRS)
-	uv run pytest -vv
+	$(UV_RUN) ruff check --no-fix
+	$(UV_RUN) ruff format --check
+	$(UV_RUN) mypy $(DIRS)
+	$(UV_RUN) pytest -vv
 .PHONY: test
 
 build-deploy:
