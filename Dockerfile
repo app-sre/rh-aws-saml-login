@@ -12,7 +12,7 @@ USER 1001
 # Install dependencies
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/tmp/uv_cache,uid=1001 \
-    mkdir -p ${UV_CACHE_DIR} && uv sync --frozen --no-install-project
+    mkdir -p ${UV_CACHE_DIR} && uv sync --frozen --no-install-project --link-mode=copy
 
 # other project related files
 COPY LICENSE README.md Makefile ./
@@ -23,6 +23,6 @@ COPY tests ./tests
 
 # Sync the project
 RUN --mount=type=cache,target=/tmp/uv_cache,uid=1001 \
-    uv sync --frozen --no-editable
+    uv sync --frozen --no-editable --link-mode=copy
 
 RUN make $MAKE_TARGET
