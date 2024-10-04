@@ -1,7 +1,9 @@
 import json
 import logging
 from collections.abc import Generator
+from importlib.metadata import version
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich import print  # noqa: A004
@@ -42,6 +44,12 @@ def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None
             yield name
 
 
+def version_callback(value: bool) -> None:  # noqa: FBT001
+    if value:
+        print(f"Version: {version(APP_NAME)}")
+        raise typer.Exit
+
+
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
 def cli(  # noqa: PLR0913
     account_name: str = typer.Argument(
@@ -65,6 +73,9 @@ def cli(  # noqa: PLR0913
         default=False, help="Open the AWS console in browser instead of a local shell"
     ),
     display_banner: bool = typer.Option(default=True, help="Display a shiny banner"),
+    version: Annotated[  # noqa: ARG001
+        bool | None, typer.Option("--version", callback=version_callback)
+    ] = None,
 ) -> None:
     """Login to AWS using SAML."""
     logging.basicConfig(
