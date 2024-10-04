@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+### Bug Fixes
+
+* Do not release a whell due to a `uv` bug
+
 ## 0.4.0
 
 ### Bug Fixes
