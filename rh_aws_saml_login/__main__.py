@@ -1,7 +1,9 @@
 import json
 import logging
 from collections.abc import Generator
+from importlib.metadata import version
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich import print  # noqa: A004
@@ -42,29 +44,45 @@ def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None
             yield name
 
 
+def version_callback(value: bool) -> None:  # noqa: FBT001
+    if value:
+        print(f"Version: {version(APP_NAME)}")
+        raise typer.Exit
+
+
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
 def cli(  # noqa: PLR0913
-    account_name: str = typer.Argument(
-        None,
-        help="AWS account name. '.' as shortcut to use $AWS_ACCOUNT_NAME.",
-        autocompletion=complete_account,
-    ),
-    region: str = typer.Option("us-east-1", help="AWS region"),
-    saml_url: str = typer.Option(
-        "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
-        help="SAML URL",
-    ),
-    open_command: str = typer.Option(
-        "open",
-        help="Command to open the browser (e.g. 'xdg-open' on Linux)",
-        envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
-    ),
+    account_name: Annotated[
+        str | None,
+        typer.Argument(
+            help="AWS account name. '.' as shortcut to use $AWS_ACCOUNT_NAME.",
+            autocompletion=complete_account,
+        ),
+    ] = None,
+    region: Annotated[str, typer.Option(help="AWS region")] = "us-east-1",
+    saml_url: Annotated[
+        str,
+        typer.Option(
+            help="SAML URL",
+        ),
+    ] = "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
+    open_command: Annotated[
+        str,
+        typer.Option(
+            help="Command to open the browser (e.g. 'xdg-open' on Linux)",
+            envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
+        ),
+    ] = "open",
     *,
-    debug: bool = typer.Option(default=False, help="Enable debug mode"),
-    console: bool = typer.Option(
-        default=False, help="Open the AWS console in browser instead of a local shell"
-    ),
-    display_banner: bool = typer.Option(default=True, help="Display a shiny banner"),
+    debug: Annotated[bool, typer.Option(help="Enable debug mode")] = False,
+    console: Annotated[
+        bool,
+        typer.Option(help="Open the AWS console in browser instead of a local shell"),
+    ] = False,
+    display_banner: Annotated[bool, typer.Option(help="Display a shiny banner")] = True,
+    version: Annotated[  # noqa: ARG001
+        bool | None, typer.Option("--version", callback=version_callback)
+    ] = None,
 ) -> None:
     """Login to AWS using SAML."""
     logging.basicConfig(
