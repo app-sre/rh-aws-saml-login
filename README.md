@@ -45,6 +45,12 @@ You can also use `pipx` to run the library without installing it:
 pipx run rh-aws-saml-login
 ```
 
+## Upgrade
+pipx upgrade:
+```shell
+pipx upgrade rh-aws-saml-login
+```
+
 ## Usage
 
 ```shell
