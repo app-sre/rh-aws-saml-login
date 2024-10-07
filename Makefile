@@ -36,7 +36,7 @@ build-deploy:
 .PHONY: build-deploy
 
 pypi:
-	uv build --sdist
+	uv build --sdist --wheel
 	uv publish
 .PHONY: pypi
 

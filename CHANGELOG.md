@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+### Features
+
+* More PyPI metadata
+* Release binary wheels for Linux and macOS
+
 ## 0.4.1
 
 ### Bug Fixes
@@ -10,11 +17,11 @@
 
 ### Bug Fixes
 
-* Fix kerberos ticket test on Linux (#18)
+* Fix kerberos ticket test on Linux ([#18](https://github.com/app-sre/rh-aws-saml-login/issues/18))
 
 ### Features
 
-* Add `--version` option (#16)
+* Add `--version` option ([#16](https://github.com/app-sre/rh-aws-saml-login/issues/16))
 
 ### Chore
 
