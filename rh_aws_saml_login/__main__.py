@@ -59,6 +59,7 @@ def cli(  # noqa: PLR0913
             autocompletion=complete_account,
         ),
     ] = None,
+    command: Annotated[list[str] | None, typer.Argument(help="Command to run")] = None,
     region: Annotated[str, typer.Option(help="AWS region")] = "us-east-1",
     saml_url: Annotated[
         str,
@@ -97,6 +98,7 @@ def cli(  # noqa: PLR0913
         region=region,
         console=console,
         saml_url=saml_url,
+        command=command,
         open_command=open_command,
     )
     write_accounts_cache(accounts)

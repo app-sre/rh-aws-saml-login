@@ -146,19 +146,24 @@ def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredential
 
 
 def open_aws_shell(
-    account: AwsAccount, credentials: AwsCredentials, region: str
+    account: AwsAccount,
+    credentials: AwsCredentials,
+    region: str,
+    command: list[str] | str | None = None,
 ) -> None:
-    print(
-        dedent(f"""
+    if not command:
+        print(
+            dedent(f"""
             Spawning a new shell. Use exit or CTRL+d to leave it!
 
             :nerd_face: {account.name}
             :rocket: {account.role_name}
             :hourglass: {humanize.naturaltime(credentials.expiration)} ({credentials.expiration.astimezone(tz=get_localzone())})
         """)
-    )
+        )
+        command = os.environ.get("SHELL", "/bin/bash")
     run(
-        os.environ["SHELL"],
+        command,
         check=False,
         capture_output=False,
         env={
@@ -211,6 +216,7 @@ def main(
     account_name: str | None,
     region: str,
     saml_url: str,
+    command: list[str] | None,
     open_command: str,
     *,
     console: bool,
@@ -257,6 +263,6 @@ def main(
     if console:
         open_aws_console(open_command, credentials)
     else:
-        open_aws_shell(account, credentials, region)
+        open_aws_shell(account, credentials, region, command)
     bye()
     return [acc.name for acc in aws_accounts]

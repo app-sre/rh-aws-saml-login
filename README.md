@@ -4,6 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/rh-aws-saml-login)][pypi-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
 ![PyPI - License](https://img.shields.io/pypi/l/rh-aws-saml-login)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP.
 
@@ -34,7 +35,7 @@ sudo dnf install krb5-devel
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
 
 ```shell
-uv tool install rh-aws-saml-login
+uv tool install -p python3.12 rh-aws-saml-login
 ```
 
 and upgrade an existing installation with:
@@ -65,11 +66,69 @@ pipx upgrade rh-aws-saml-login
 
 ## Usage
 
+### Interactive mode
+
+Just run `rh-aws-saml-login` to start the interactive mode. It will list all available AWS accounts and roles, and you can choose the one you want to log in to:
+
 ```shell
-rh-aws-saml-login
+$ rh-aws-saml-login
+
+         __                                                         __      __            _
+   _____/ /_        ____ __      _______      _________ _____ ___  / /     / /___  ____ _(_)___
+  / ___/ __ \______/ __ `/ | /| / / ___/_____/ ___/ __ `/ __ `__ \/ /_____/ / __ \/ __ `/ / __ \
+ / /  / / / /_____/ /_/ /| |/ |/ (__  )_____(__  ) /_/ / / / / / / /_____/ / /_/ / /_/ / / / / /
+/_/  /_/ /_/      \__,_/ |__/|__/____/     /____/\__,_/_/ /_/ /_/_/     /_/\____/\__, /_/_/ /_/
+                                                                                /____/
+
+✅ Test for a valid Kerberos ticket ...
+✅ Getting SAML token ...
+✅ Getting AWS accounts ...
+✅ Getting temporary AWS credentials ...
+
+Spawning a new shell. Use exit or CTRL+d to leave it!
+
+🤓 app-sre
+🚀 1234567890-app-sre
+⌛ 59 minutes from now (2024-10-07 11:16:54+02:00)
+
+$ aws s3 ls
+...
 ```
 
-This spawns a new shell with the following environment variables are set:
+This spawns a new shell with all required AWS environment variables set. See the [Environment Variables](#environment-variables) section for more information.
+
+### Non-interactive mode
+
+Instead of running the interactive mode, you can also use `rh-aws-saml-login` to run any arbitrary command with the AWS environment variables set:
+
+```shell
+rh-aws-saml-login <ACCOUNT_NAME> -- <COMMAND> [ARGUMENTS]
+```
+
+For example:
+
+```shell
+$ rh-aws-saml-login app-sre-stage -- aws s3 ls
+
+         __                                                         __      __            _
+   _____/ /_        ____ __      _______      _________ _____ ___  / /     / /___  ____ _(_)___
+  / ___/ __ \______/ __ `/ | /| / / ___/_____/ ___/ __ `/ __ `__ \/ /_____/ / __ \/ __ `/ / __ \
+ / /  / / / /_____/ /_/ /| |/ |/ (__  )_____(__  ) /_/ / / / / / / /_____/ / /_/ / /_/ / / / / /
+/_/  /_/ /_/      \__,_/ |__/|__/____/     /____/\__,_/_/ /_/ /_/_/     /_/\____/\__, /_/_/ /_/
+                                                                                /____/
+
+✅ Test for a valid Kerberos ticket ...
+✅ Getting SAML token ...
+✅ Getting AWS accounts ...
+✅ Getting temporary AWS credentials ...
+2022-05-17 13:48:49 bucket-name-stage
+2022-12-13 13:21:02 bucket-name-tfstate-stage
+Thank you for using rh-aws-saml-login. 🙇‍♂️ Have a great day ahead! ❤️
+```
+
+## Environment Variables
+
+`rh-aws-saml-login` sets the following environment variables:
 
 - `AWS_ACCOUNT_NAME`: The name/alias of the AWS account
 - `AWS_ROLE_NAME`:  The name of the role
@@ -81,7 +140,7 @@ This spawns a new shell with the following environment variables are set:
 
 ## Features
 
-rh-aws-saml-login currently provides the following features (get help with `-h` or `--help`):
+`rh-aws-saml-login` currently provides the following features (get help with `-h` or `--help`):
 
 - No configuration needed
 - Uses Kerberos authentication
@@ -97,9 +156,6 @@ rh-aws-saml-login currently provides the following features (get help with `-h` 
   ```
 
 ## Development
-
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 - Update CHANGELOG.md with the new version number and date
 - Bump the version number in [pyproject.toml](/pyproject.toml)
