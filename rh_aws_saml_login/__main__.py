@@ -51,7 +51,7 @@ def version_callback(value: bool) -> None:  # noqa: FBT001
 
 
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
-def cli(  # noqa: PLR0913
+def cli(
     account_name: Annotated[
         str | None,
         typer.Argument(
