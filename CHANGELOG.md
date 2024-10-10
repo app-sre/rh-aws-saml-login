@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+### Features
+
+* **Non-interactive mode**: Run any arbitrary command with the AWS environment variables set.
+
 ## 0.4.2
 
 ### Features
