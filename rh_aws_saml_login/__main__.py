@@ -70,7 +70,7 @@ def cli(  # noqa: PLR0917
     session_timeout: Annotated[
         int,
         typer.Option(
-            help="Session timeout in minutes. Max 12 hours! Default: 60 minutes",
+            help="Session timeout in minutes. Default: 60 minutes. Max value depends on the AWS IAM role.",
             envvar="RH_AWS_SESSION_TIMEOUT",
         ),
     ] = 60,
