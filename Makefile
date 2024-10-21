@@ -1,5 +1,6 @@
 DIRS := rh_aws_saml_login
 BUILD_ARGS := TWINE_USERNAME TWINE_PASSWORD
+CONTAINER_ENGINE ?= $(shell which podman >/dev/null 2>&1 && echo podman || echo docker)
 # TWINE_USERNAME & TWINE_PASSWORD are available in jenkins job
 UV_PUBLISH_USERNAME := $(TWINE_USERNAME)
 UV_PUBLISH_PASSWORD := $(TWINE_PASSWORD)
@@ -21,7 +22,7 @@ format:
 .PHONY: format
 
 pr-check:
-	podman build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	$(CONTAINER_ENGINE) build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: pr-check
 
 test:
@@ -32,7 +33,7 @@ test:
 .PHONY: test
 
 build-deploy:
-	podman build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	$(CONTAINER_ENGINE) build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: build-deploy
 
 pypi:
