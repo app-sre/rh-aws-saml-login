@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+* `--session-timeout` option to set the session timeout in minutes. Also available as the `RH_AWS_SESSION_TIMEOUT` environment variable.
+
 ## 0.5.0
 
 ### Features
