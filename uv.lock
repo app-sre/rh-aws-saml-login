@@ -523,7 +523,7 @@ wheels = [
 
 [[package]]
 name = "rh-aws-saml-login"
-version = "0.3.4"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },

@@ -51,7 +51,7 @@ def version_callback(value: bool) -> None:  # noqa: FBT001
 
 
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
-def cli(
+def cli(  # noqa: PLR0917
     account_name: Annotated[
         str | None,
         typer.Argument(
@@ -67,6 +67,13 @@ def cli(
             help="SAML URL",
         ),
     ] = "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
+    session_timeout: Annotated[
+        int,
+        typer.Option(
+            help="Session timeout in minutes. Default: 60 minutes. Max value depends on the AWS IAM role.",
+            envvar="RH_AWS_SESSION_TIMEOUT",
+        ),
+    ] = 60,
     open_command: Annotated[
         str,
         typer.Option(
@@ -98,6 +105,7 @@ def cli(
         region=region,
         console=console,
         saml_url=saml_url,
+        saml_token_duration_seconds=session_timeout * 60,
         command=command,
         open_command=open_command,
     )

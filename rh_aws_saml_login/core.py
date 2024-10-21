@@ -7,6 +7,7 @@ import subprocess
 import sys
 import urllib
 from dataclasses import dataclass
+from datetime import UTC
 from datetime import datetime as dt
 from textwrap import dedent
 
@@ -26,6 +27,8 @@ from rich.progress import (
 from tzlocal import get_localzone
 
 from rh_aws_saml_login.utils import bye, run
+
+SCRIPT_START_TIME = dt.now(UTC)
 
 
 @dataclass
@@ -128,7 +131,9 @@ def select_aws_account(
     )
 
 
-def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredentials:
+def assume_role_with_saml(
+    account: AwsAccount, saml_token: str, saml_token_duration_seconds: int
+) -> AwsCredentials:
     sts = boto3.client(
         "sts", config=botocore.config.Config(signature_version=botocore.UNSIGNED)
     )
@@ -136,6 +141,7 @@ def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredential
         RoleArn=account.role_arn,
         PrincipalArn=account.principle_arn,
         SAMLAssertion=saml_token,
+        DurationSeconds=saml_token_duration_seconds,
     )
     return AwsCredentials(
         access_key=response["Credentials"]["AccessKeyId"],
@@ -158,7 +164,7 @@ def open_aws_shell(
 
             :nerd_face: {account.name}
             :rocket: {account.role_name}
-            :hourglass: {humanize.naturaltime(credentials.expiration)} ({credentials.expiration.astimezone(tz=get_localzone())})
+            :hourglass: {humanize.naturaltime(credentials.expiration, when=SCRIPT_START_TIME)} ({credentials.expiration.astimezone(tz=get_localzone())})
         """)
         )
         command = os.environ.get("SHELL", "/bin/bash")
@@ -212,10 +218,11 @@ def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
     run([*shlex.split(open_command), federated_url], check=False, capture_output=False)
 
 
-def main(
+def main(  # noqa: PLR0917
     account_name: str | None,
     region: str,
     saml_url: str,
+    saml_token_duration_seconds: int,
     command: list[str] | None,
     open_command: str,
     *,
@@ -257,7 +264,9 @@ def main(
         task = progress.add_task(
             description="Getting temporary AWS credentials ...", total=1
         )
-        credentials = assume_role_with_saml(account, saml_token)
+        credentials = assume_role_with_saml(
+            account, saml_token, saml_token_duration_seconds
+        )
         progress.update(task, completed=1)
 
     if console:
