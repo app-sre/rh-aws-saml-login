@@ -128,7 +128,7 @@ def select_aws_account(
     )
 
 
-def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredentials:
+def assume_role_with_saml(account: AwsAccount, saml_token: str, saml_token_duration_seconds: int) -> AwsCredentials:
     sts = boto3.client(
         "sts", config=botocore.config.Config(signature_version=botocore.UNSIGNED)
     )
@@ -136,6 +136,7 @@ def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredential
         RoleArn=account.role_arn,
         PrincipalArn=account.principle_arn,
         SAMLAssertion=saml_token,
+        DurationSeconds=saml_token_duration_seconds,
     )
     return AwsCredentials(
         access_key=response["Credentials"]["AccessKeyId"],
@@ -216,6 +217,7 @@ def main(
     account_name: str | None,
     region: str,
     saml_url: str,
+    saml_token_duration_seconds: int | None,
     command: list[str] | None,
     open_command: str,
     *,
@@ -257,7 +259,7 @@ def main(
         task = progress.add_task(
             description="Getting temporary AWS credentials ...", total=1
         )
-        credentials = assume_role_with_saml(account, saml_token)
+        credentials = assume_role_with_saml(account, saml_token, saml_token_duration_seconds)
         progress.update(task, completed=1)
 
     if console:

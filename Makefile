@@ -21,7 +21,7 @@ format:
 .PHONY: format
 
 pr-check:
-	docker build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	podman build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: pr-check
 
 test:
@@ -32,7 +32,7 @@ test:
 .PHONY: test
 
 build-deploy:
-	docker build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	podman build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: build-deploy
 
 pypi:

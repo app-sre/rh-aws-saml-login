@@ -67,6 +67,11 @@ def cli(
             help="SAML URL",
         ),
     ] = "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
+    saml_token_duration_seconds: Annotated[
+        int | None,
+        typer.Argument(
+            help="SAML token duration to request in seconds. If not set, default value is taken from AWS."
+    ] = None,
     open_command: Annotated[
         str,
         typer.Option(
@@ -98,6 +103,7 @@ def cli(
         region=region,
         console=console,
         saml_url=saml_url,
+        saml_token_duration_seconds=saml_token_duration_seconds,
         command=command,
         open_command=open_command,
     )
