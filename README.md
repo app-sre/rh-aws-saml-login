@@ -36,7 +36,7 @@ sudo dnf install krb5-devel
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
 
 ```shell
-uv tool install -p python3.12 rh-aws-saml-login
+uv tool install rh-aws-saml-login
 ```
 
 and upgrade an existing installation with:
