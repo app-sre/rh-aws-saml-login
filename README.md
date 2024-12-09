@@ -1,6 +1,7 @@
 # rh-aws-saml-login
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyPI](https://img.shields.io/pypi/v/rh-aws-saml-login)][pypi-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
 ![PyPI - License](https://img.shields.io/pypi/l/rh-aws-saml-login)
