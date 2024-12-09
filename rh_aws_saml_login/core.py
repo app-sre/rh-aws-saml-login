@@ -30,6 +30,8 @@ from rh_aws_saml_login.utils import bye, run
 
 SCRIPT_START_TIME = dt.now(UTC)
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class AwsAccount:
@@ -83,7 +85,7 @@ def get_aws_accounts(aws_url: str, saml_token: str) -> list[AwsAccount]:
     p = pq(r.text).xhtml_to_html()
     accounts = p("div.saml-account")
     if not accounts:
-        logging.error("No AWS accounts found: %s", r.text)
+        logger.error("No AWS accounts found: %s", r.text)
         sys.exit(1)
 
     aws_accounts = []
@@ -237,7 +239,7 @@ def main(  # noqa: PLR0917
         )
         if not is_kerberos_ticket_valid():
             progress.stop()
-            logging.info("No valid Kerberos ticket found. Acquiring one ...")
+            logger.info("No valid Kerberos ticket found. Acquiring one ...")
             kinit()
             progress.start()
         progress.update(task, completed=1)
@@ -256,7 +258,7 @@ def main(  # noqa: PLR0917
         account = select_aws_account(aws_accounts, account_name)
         progress.start()
         if not account:
-            logging.error("Account not found: %s", account_name)
+            logger.error("Account not found: %s", account_name)
             sys.exit(1)
 
         progress.update(task, completed=1)
