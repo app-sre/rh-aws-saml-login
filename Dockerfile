@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311:1-77.1726664316
+FROM registry.access.redhat.com/ubi9/python-311:9.5-1733172699
 COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
 
 ARG TWINE_USERNAME
