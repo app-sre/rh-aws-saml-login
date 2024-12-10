@@ -1,6 +1,7 @@
 # rh-aws-saml-login
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyPI](https://img.shields.io/pypi/v/rh-aws-saml-login)][pypi-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
 ![PyPI - License](https://img.shields.io/pypi/l/rh-aws-saml-login)
@@ -35,7 +36,7 @@ sudo dnf install krb5-devel
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
 
 ```shell
-uv tool install -p python3.12 rh-aws-saml-login
+uv tool install rh-aws-saml-login
 ```
 
 and upgrade an existing installation with:

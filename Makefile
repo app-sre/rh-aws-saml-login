@@ -1,46 +1,29 @@
-DIRS := rh_aws_saml_login
-BUILD_ARGS := TWINE_USERNAME TWINE_PASSWORD
-CONTAINER_ENGINE ?= $(shell which podman >/dev/null 2>&1 && echo podman || echo docker)
-# TWINE_USERNAME & TWINE_PASSWORD are available in jenkins job
-UV_PUBLISH_USERNAME := $(TWINE_USERNAME)
-UV_PUBLISH_PASSWORD := $(TWINE_PASSWORD)
-export UV_PUBLISH_USERNAME
-export UV_PUBLISH_PASSWORD
-
-UV_RUN := uv run --frozen
 tapes = $(wildcard demo/*.tape)
 gifs = $(tapes:%.tape=%.gif)
 
-all:
-	@echo $(tapes)
-	@echo $(tape_files)
-	@echo $(patsubst %.tape,%.c,$(tape_files))
-
-format:
-	$(UV_RUN) ruff check
-	$(UV_RUN) ruff format
 .PHONY: format
+format:
+	uv run ruff check
+	uv run ruff format
 
-pr-check:
-	$(CONTAINER_ENGINE) build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
-.PHONY: pr-check
-
-test:
-	$(UV_RUN) ruff check --no-fix
-	$(UV_RUN) ruff format --check
-	$(UV_RUN) mypy $(DIRS)
-	$(UV_RUN) pytest -vv
 .PHONY: test
+test:
+	uv run --frozen ruff check --no-fix
+	uv run --frozen ruff format --check
+	uv run --frozen mypy
+	uv run --frozen pytest
 
-build-deploy:
-	$(CONTAINER_ENGINE) build -t rh-aws-saml-login-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
-.PHONY: build-deploy
+.PHONY: dev-venv
+dev-venv:
+	uv sync --python 3.11
 
+# do not print pypi commands to avoid the token leaking to the logs
+.SILENT: pypi
+.PHONY: pypi
 pypi:
 	uv build --sdist --wheel
-	uv publish
-.PHONY: pypi
-
+	UV_PUBLISH_TOKEN=$(shell cat /run/secrets/app-sre-pypi-credentials/token) \
+		uv publish
 
 update-demos: $(gifs)
 

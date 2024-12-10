@@ -1,6 +1,6 @@
 [project]
 name = "rh-aws-saml-login"
-version = "0.6.0"
+version = "0.6.1"
 description = "A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT License" }
@@ -10,6 +10,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">= 3.11"
 dependencies = [
@@ -24,12 +25,12 @@ dependencies = [
 ]
 
 
-[tool.uv]
-dev-dependencies = [
-    "mypy>=1.11.2",
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
     "pytest>=8.3.3",
     "requests-mock>=1.12.1",
-    "ruff>=0.6.8",
+    "ruff>=0.8.0",
     "types-requests>=2.32.0.20240914",
 ]
 
@@ -50,10 +51,13 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.sdist]
 only-include = ["rh_aws_saml_login"]
 
+
+[tool.hatch.build.targets.wheel]
+only-include = ["rh_aws_saml_login"]
+
 [tool.ruff]
 line-length = 88
 target-version = 'py311'
-required-version = "0.6.8"
 src = ["rh_aws_saml_login"]
 extend-exclude = [".local", ".cache"]
 fix = true
