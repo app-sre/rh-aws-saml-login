@@ -23,10 +23,14 @@ spec:
     value: quay.io/redhat-user-workloads/app-sre-tenant/rh-aws-saml-login-main/rh-aws-saml-login-main:{{revision}}
   - name: dockerfile
     value: Dockerfile
+  - name: image-expires-after
+    value: 5d
   - name: path-context
     value: .
   - name: target-stage
-    value: prod
+    value: pypi
+  - name: additional_secret
+    value: app-sre-pypi-credentials
   pipelineRef:
     resolver: git
     params:
