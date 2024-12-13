@@ -31,24 +31,32 @@ def accounts() -> list[AwsAccount]:
             uid="1234567890",
             role_name="admin-role",
             role_arn="arn:aws:iam::1234567890:role/admin-role",
+            session_timeout_seconds=60,
+            region="us-east-1",
         ),
         AwsAccount(
             name="account-1",
             uid="1234567890",
             role_name="read-only",
             role_arn="arn:aws:iam::1234567890:role/read-only",
+            session_timeout_seconds=60,
+            region="us-east-1",
         ),
         AwsAccount(
             name="account-2",
             uid="5432167890",
             role_name="admin-role",
             role_arn="arn:aws:iam::5432167890:role/admin-role",
+            session_timeout_seconds=60,
+            region="us-east-1",
         ),
         AwsAccount(
             name="987654321",
             uid="987654321",
             role_name="987654321-admin",
             role_arn="arn:aws:iam::987654321:role/987654321-admin",
+            session_timeout_seconds=60,
+            region="us-east-1",
         ),
     ]
 
@@ -71,7 +79,12 @@ def test_get_aws_accounts(
     saml_token = "fake-saml"  # noqa: S105
     requests_mock.post(url, text=fx("aws-sso.html"))
 
-    assert get_aws_accounts(url, saml_token) == accounts
+    assert (
+        get_aws_accounts(
+            url, saml_token, saml_token_duration_seconds=60, region="us-east-1"
+        )
+        == accounts
+    )
 
 
 def test_select_aws_account(accounts: list[AwsAccount]) -> None:

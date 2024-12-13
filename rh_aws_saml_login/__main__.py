@@ -6,9 +6,10 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from rich import print  # noqa: A004
+from rich import print as rich_print
 
 from rh_aws_saml_login import core
+from rh_aws_saml_login.consts import AwsConsoleService, AwsRegion
 from rh_aws_saml_login.utils import blend_text, enable_requests_logging
 
 app = typer.Typer(rich_markup_mode="rich")
@@ -44,9 +45,9 @@ def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None
             yield name
 
 
-def version_callback(value: bool) -> None:  # noqa: FBT001
+def version_callback(*, value: bool) -> None:
     if value:
-        print(f"Version: {version(APP_NAME)}")
+        rich_print(f"Version: {version(APP_NAME)}")
         raise typer.Exit
 
 
@@ -60,7 +61,13 @@ def cli(  # noqa: PLR0917
         ),
     ] = None,
     command: Annotated[list[str] | None, typer.Argument(help="Command to run")] = None,
-    region: Annotated[str, typer.Option(help="AWS region")] = "us-east-1",
+    region: Annotated[
+        AwsRegion,
+        typer.Option(
+            help="AWS region",
+            envvar="RH_AWS_REGION",
+        ),
+    ] = AwsRegion.US_EAST_1,
     saml_url: Annotated[
         str,
         typer.Option(
@@ -81,13 +88,38 @@ def cli(  # noqa: PLR0917
             envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
         ),
     ] = "open",
+    console_service: Annotated[
+        AwsConsoleService | None,
+        typer.Option(
+            help="Directly open this AWS console service",
+            envvar="RH_AWS_CONSOLE_SERVICE",
+        ),
+    ] = None,
+    assume_uid: Annotated[
+        str | None,
+        typer.Option(
+            help="Define the target AWS account UID to assume",
+        ),
+    ] = None,
+    assume_role: Annotated[
+        str,
+        typer.Option(
+            help="Define the role name to assume",
+        ),
+    ] = "role/OrganizationAccountAccessRole",
     *,
     debug: Annotated[bool, typer.Option(help="Enable debug mode")] = False,
     console: Annotated[
         bool,
         typer.Option(help="Open the AWS console in browser instead of a local shell"),
     ] = False,
-    display_banner: Annotated[bool, typer.Option(help="Display a shiny banner")] = True,
+    display_banner: Annotated[
+        bool,
+        typer.Option(
+            help="Display a shiny banner",
+            envvar="RH_DISPLAY_BANNER",
+        ),
+    ] = True,
     version: Annotated[  # noqa: ARG001
         bool | None, typer.Option("--version", callback=version_callback)
     ] = None,
@@ -97,7 +129,7 @@ def cli(  # noqa: PLR0917
         level=logging.INFO if not debug else logging.DEBUG, format="%(message)s"
     )
     if display_banner:
-        print(blend_text(BANNER, (32, 32, 255), (255, 32, 255)))
+        rich_print(blend_text(BANNER, (32, 32, 255), (255, 32, 255)))
     if debug:
         enable_requests_logging()
     accounts = core.main(
@@ -105,9 +137,12 @@ def cli(  # noqa: PLR0917
         region=region,
         console=console,
         saml_url=saml_url,
-        saml_token_duration_seconds=session_timeout * 60,
+        session_timeout_seconds=session_timeout * 60,
         command=command,
         open_command=open_command,
+        console_service=console_service,
+        assume_uid=assume_uid,
+        assume_role_name=assume_role,
     )
     write_accounts_cache(accounts)
 
