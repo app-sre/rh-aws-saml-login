@@ -1,11 +1,33 @@
 # Changelog
 
+## 0.7.0
+
+### Features
+
+* **Assume role** Add `--assume-uid` and `--assume-role` options to assume a role in another account.
+* **Console** Add `--console-service` option (env `RH_AWS_CONSOLE_SERVICE`) to open the AWS web console for a specific AWS service. Default is still the AWS console dashboard.
+* **Environment Variables** Add `RH_DISPLAY_BANNER` (option `--display-banner/--no-display-banner` ) and `RH_AWS_REGION` (option `--region`) environment variables.
+* **Shell completion** Add shell completion for the `--region` and `--console-service` options.
+
+### Bug Fixes
+
+* Honor `--region` option for the AWS console URL
+* Fix "Account not found" error message
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.6.1
+
+### Chore
 
 * Use Konflux for the release process
 * Upgrade dependencies
 
 ## 0.6.0
+
+### Features
 
 * `--session-timeout` option to set the session timeout in minutes. Also available as the `RH_AWS_SESSION_TIMEOUT` environment variable.
 
