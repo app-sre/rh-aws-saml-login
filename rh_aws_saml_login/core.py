@@ -39,6 +39,8 @@ class AwsAccount:
     uid: str
     role_name: str
     role_arn: str
+    session_timeout_seconds: int
+    region: str
 
     @property
     def principle_arn(self) -> str:
@@ -51,6 +53,8 @@ class AwsCredentials:
     secret_key: str
     session_token: str
     expiration: dt
+    session_timeout_seconds: int
+    region: str
 
 
 def is_kerberos_ticket_valid() -> bool:
@@ -79,7 +83,9 @@ def get_saml_auth(url: str) -> tuple[str, str]:
     return aws_url, saml_token
 
 
-def get_aws_accounts(aws_url: str, saml_token: str) -> list[AwsAccount]:
+def get_aws_accounts(
+    aws_url: str, saml_token: str, saml_token_duration_seconds: int, region: str
+) -> list[AwsAccount]:
     r = requests.post(aws_url, data={"SAMLResponse": saml_token}, timeout=10)
     r.raise_for_status()
     p = pq(r.text).xhtml_to_html()
@@ -105,6 +111,8 @@ def get_aws_accounts(aws_url: str, saml_token: str) -> list[AwsAccount]:
                     uid=role_arn.split(":")[4],
                     role_name=role_label.text(),
                     role_arn=role_arn,
+                    session_timeout_seconds=saml_token_duration_seconds,
+                    region=region,
                 )
             )
     return aws_accounts
@@ -133,23 +141,47 @@ def select_aws_account(
     )
 
 
-def assume_role_with_saml(
-    account: AwsAccount, saml_token: str, saml_token_duration_seconds: int
-) -> AwsCredentials:
+def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredentials:
     sts = boto3.client(
-        "sts", config=botocore.config.Config(signature_version=botocore.UNSIGNED)
+        "sts",
+        config=botocore.config.Config(signature_version=botocore.UNSIGNED),
+        region_name=account.region,
     )
     response = sts.assume_role_with_saml(
         RoleArn=account.role_arn,
         PrincipalArn=account.principle_arn,
         SAMLAssertion=saml_token,
-        DurationSeconds=saml_token_duration_seconds,
+        DurationSeconds=account.session_timeout_seconds,
     )
     return AwsCredentials(
         access_key=response["Credentials"]["AccessKeyId"],
         secret_key=response["Credentials"]["SecretAccessKey"],
         session_token=response["Credentials"]["SessionToken"],
         expiration=response["Credentials"]["Expiration"],
+        session_timeout_seconds=account.session_timeout_seconds,
+        region=account.region,
+    )
+
+
+def assume_role(account: AwsAccount, credentials: AwsCredentials) -> AwsCredentials:
+    sts = boto3.client(
+        "sts",
+        aws_access_key_id=credentials.access_key,
+        aws_secret_access_key=credentials.secret_key,
+        aws_session_token=credentials.session_token,
+        region_name=account.region,
+    )
+    response = sts.assume_role(
+        RoleArn=account.role_arn,
+        RoleSessionName=account.role_name,
+    )
+    return AwsCredentials(
+        access_key=response["Credentials"]["AccessKeyId"],
+        secret_key=response["Credentials"]["SecretAccessKey"],
+        session_token=response["Credentials"]["SessionToken"],
+        expiration=response["Credentials"]["Expiration"],
+        session_timeout_seconds=account.session_timeout_seconds,
+        region=account.region,
     )
 
 
@@ -186,7 +218,9 @@ def open_aws_shell(
     )
 
 
-def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
+def open_aws_console(
+    open_command: str, credentials: AwsCredentials, console_service: str | None = None
+) -> None:
     """Open the AWS console in a browser.
 
     See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-custom-url.html
@@ -197,8 +231,7 @@ def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
         aws_federated_signin_endpoint,
         params={
             "Action": "getSigninToken",
-            # 12 hours
-            "SessionDuration": "43200",
+            "SessionDuration": str(credentials.session_timeout_seconds),
             "Session": json.dumps({
                 "sessionId": credentials.access_key,
                 "sessionKey": credentials.secret_key,
@@ -207,13 +240,18 @@ def open_aws_console(open_command: str, credentials: AwsCredentials) -> None:
         },
         timeout=10,
     )
-    signin_token = json.loads(response.text)
+    if response.status_code == requests.codes.BAD_REQUEST:
+        logger.error(
+            "Failed to get a sign-in token. Try lowering the session timeout value via --session-timeout."
+        )
+        sys.exit(1)
 
+    signin_token = json.loads(response.text)
     # Make a federated URL that can be used to sign into the AWS Management Console.
     query_string = urllib.parse.urlencode({
         "Action": "login",
         "Issuer": "redhat.com",
-        "Destination": "https://console.aws.amazon.com/",
+        "Destination": f"https://{credentials.region}.console.aws.amazon.com/{console_service or ''}",
         "SigninToken": signin_token["SigninToken"],
     })
     federated_url = f"{aws_federated_signin_endpoint}?{query_string}"
@@ -224,9 +262,12 @@ def main(  # noqa: PLR0917
     account_name: str | None,
     region: str,
     saml_url: str,
-    saml_token_duration_seconds: int,
+    session_timeout_seconds: int,
     command: list[str] | None,
     open_command: str,
+    console_service: str | None,
+    assume_uid: str | None,
+    assume_role_name: str,
     *,
     console: bool,
 ) -> list[str]:
@@ -249,30 +290,42 @@ def main(  # noqa: PLR0917
         progress.update(task, completed=1)
 
         task = progress.add_task(description="Getting AWS accounts ...", total=1)
-        aws_accounts = get_aws_accounts(aws_url, saml_token)
+        aws_accounts = get_aws_accounts(
+            aws_url, saml_token, session_timeout_seconds, region
+        )
 
-        progress.stop()
         if account_name == ".":
             # account name can be passed as a dot to open the console for the previously selected account
             account_name = os.environ.get("AWS_ACCOUNT_NAME")
-        account = select_aws_account(aws_accounts, account_name)
-        progress.start()
-        if not account:
+
+        progress.stop()
+        if not (account := select_aws_account(aws_accounts, account_name)):
             logger.error("Account not found: %s", account_name)
             sys.exit(1)
-
+        progress.start()
         progress.update(task, completed=1)
 
         task = progress.add_task(
             description="Getting temporary AWS credentials ...", total=1
         )
-        credentials = assume_role_with_saml(
-            account, saml_token, saml_token_duration_seconds
-        )
+        credentials = assume_role_with_saml(account, saml_token)
         progress.update(task, completed=1)
 
+        if assume_uid:
+            account = AwsAccount(
+                name=assume_uid,
+                uid=assume_uid,
+                role_name=account.name,
+                role_arn=f"arn:aws:iam::{assume_uid}:{assume_role_name}",
+                session_timeout_seconds=session_timeout_seconds,
+                region=region,
+            )
+            task = progress.add_task(description="Assume role ...", total=1)
+            credentials = assume_role(account, credentials)
+            progress.update(task, completed=1)
+
     if console:
-        open_aws_console(open_command, credentials)
+        open_aws_console(open_command, credentials, console_service)
     else:
         open_aws_shell(account, credentials, region, command)
     bye()

@@ -146,6 +146,7 @@ Thank you for using rh-aws-saml-login. 🙇‍♂️ Have a great day ahead! ❤
 - No configuration needed
 - Uses Kerberos authentication
 - Open the AWS web console for an account with the `--console` option
+- Assume a role with the `--assume-uid` option
 - Shell auto-completion (bash, zsh, and fish) including AWS account names
 - Integrates nicely with the [starship](https://starship.rs)
 
@@ -155,6 +156,36 @@ Thank you for using rh-aws-saml-login. 🙇‍♂️ Have a great day ahead! ❤
    style = "cyan"
    symbol = "🚀"
   ```
+
+### Assume Role
+
+AWS allows to switch to another AWS account via the assume role feature. `rh-aws-saml-login` supports this feature with the `--assume-uid` and `--assume-role` options. This options allows you to switch to another AWS account by providing the account ID and the role name:
+
+```shell
+rh-aws-saml-login --assume-uid <TARGET_AWS_ACCOUNT_UID> --assume-role <ROLE_NAME> <PARENT_ACCOUNT>
+```
+
+For example:
+
+```shell
+rh-aws-saml-login --assume-uid 1234567890 rh-payer-account
+```
+
+### Console
+
+Instead of spawning a new shell, you can open the AWS web console for an account with the `--console` and `--console-serice` option:
+
+```shell
+rh-aws-saml-login --console --console-service <SERVICE> <ACCOUNT_NAME>
+```
+
+For example:
+
+```shell
+rh-aws-saml-login --console --console-service s3 app-sre
+```
+
+Opens the AWS web console for the `s3` service in the `app-sre` account.
 
 ## Development
 
