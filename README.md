@@ -31,6 +31,12 @@ The `rh-aws-saml-login` CLI is a tool that simplifies the process of logging int
 sudo dnf install krb5-devel
 ```
 
+You also need the python3 header files for your system in order to build this tool. On CSB Fedora these are installed with:
+
+```shell
+sudo dnf install python3-devel
+```
+
 ### Recommended Installation Method
 
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
