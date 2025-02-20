@@ -1,5 +1,9 @@
 from enum import StrEnum
 
+RH_SAML_URL = (
+    "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws"
+)
+
 
 # boto3.session.Session().get_available_regions("rds")  # noqa: ERA001
 class AwsRegion(StrEnum):

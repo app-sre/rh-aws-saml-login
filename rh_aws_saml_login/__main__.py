@@ -9,7 +9,7 @@ import typer
 from rich import print as rich_print
 
 from rh_aws_saml_login import core
-from rh_aws_saml_login.consts import AwsConsoleService, AwsRegion
+from rh_aws_saml_login.consts import RH_SAML_URL, AwsConsoleService, AwsRegion
 from rh_aws_saml_login.utils import blend_text, enable_requests_logging
 
 app = typer.Typer(rich_markup_mode="rich")
@@ -73,7 +73,7 @@ def cli(  # noqa: PLR0917
         typer.Option(
             help="SAML URL",
         ),
-    ] = "https://auth.redhat.com/auth/realms/EmployeeIDP/protocol/saml/clients/itaws",
+    ] = RH_SAML_URL,
     session_timeout: Annotated[
         int,
         typer.Option(
