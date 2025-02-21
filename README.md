@@ -153,6 +153,7 @@ Thank you for using rh-aws-saml-login. 🙇‍♂️ Have a great day ahead! ❤
 - Uses Kerberos authentication
 - Open the AWS web console for an account with the `--console` option
 - Assume a role with the `--assume-uid` option
+- Library usage, e.g. in Jupyter notebooks
 - Shell auto-completion (bash, zsh, and fish) including AWS account names
 - Integrates nicely with the [starship](https://starship.rs)
 
@@ -192,6 +193,30 @@ rh-aws-saml-login --console --console-service s3 app-sre
 ```
 
 Opens the AWS web console for the `s3` service in the `app-sre` account.
+
+### Library Usage
+
+`rh-aws-saml-login` is primarily designed to be used as CLI tool. However, it can also be used as library in any Python application or script, e.g., in Jupyter notebooks:
+
+```python
+import boto3
+
+from rh_aws_saml_login import get_aws_credentials
+
+# Get AWS credentials
+aws_credentials = get_aws_credentials(account_name="my-shiny-aws-account-name")
+
+# Use the credentials with boto3
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=credentials.access_key,
+    aws_secret_access_key=credentials.secret_key,
+    aws_session_token=credentials.session_token,
+    region_name=credentials.region,
+)
+
+s3_client.list_buckets()
+```
 
 ## Development
 
