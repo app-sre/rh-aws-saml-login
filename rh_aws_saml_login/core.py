@@ -121,6 +121,21 @@ def get_aws_accounts(
 def select_aws_account(
     aws_accounts: list[AwsAccount], account_name: str | None, role: str | None = None
 ) -> AwsAccount | None:
+    return next(
+        (
+            a
+            for a in aws_accounts
+            if a.name == account_name and (not role or a.role_name == role)
+        ),
+        None,
+    )
+
+
+def get_aws_account(
+    aws_accounts: list[AwsAccount], account_name: str | None
+) -> AwsAccount | None:
+    role = None
+
     if not account_name:
         items = [f"{acc.name:<40} {acc.role_name}" for acc in aws_accounts]
         selected_item = iterfzf(
@@ -131,14 +146,12 @@ def select_aws_account(
         if not selected_item:
             sys.exit(0)
         account_name, role = re.split(r"\s+", selected_item, maxsplit=1)
-    return next(
-        (
-            a
-            for a in aws_accounts
-            if a.name == account_name and (not role or a.role_name == role)
-        ),
-        None,
-    )
+
+    elif account_name == ".":
+        # account name can be passed as a dot to open the console for the previously selected account
+        account_name = os.environ.get("AWS_ACCOUNT_NAME")
+
+    return select_aws_account(aws_accounts, account_name, role)
 
 
 def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredentials:
@@ -294,12 +307,8 @@ def main(  # noqa: PLR0917
             aws_url, saml_token, session_timeout_seconds, region
         )
 
-        if account_name == ".":
-            # account name can be passed as a dot to open the console for the previously selected account
-            account_name = os.environ.get("AWS_ACCOUNT_NAME")
-
         progress.stop()
-        if not (account := select_aws_account(aws_accounts, account_name)):
+        if not (account := get_aws_account(aws_accounts, account_name)):
             logger.error("Account not found: %s", account_name)
             sys.exit(1)
         progress.start()
