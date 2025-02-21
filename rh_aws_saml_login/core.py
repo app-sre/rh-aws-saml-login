@@ -91,8 +91,9 @@ def get_aws_accounts(
     p = pq(r.text).xhtml_to_html()
     accounts = p("div.saml-account")
     if not accounts:
-        logger.error("No AWS accounts found: %s", r.text)
-        sys.exit(1)
+        errormsg = f"No AWS accounts found: {r.text}"
+        logger.error(errormsg)
+        raise ValueError(errormsg)
 
     aws_accounts = []
     for account in accounts.items():
