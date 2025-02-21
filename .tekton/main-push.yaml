@@ -31,15 +31,6 @@ spec:
     value: pypi
   - name: additional_secret
     value: app-sre-pypi-credentials
-  taskRunSpecs:
-  - pipelineTaskName: ecosystem-cert-preflight-checks
-    stepSpecs:
-    - name: check-container
-      computeResources:
-        requests:
-          memory: 4Gi
-        limits:
-          memory: 4Gi
   pipelineRef:
     resolver: git
     params:
