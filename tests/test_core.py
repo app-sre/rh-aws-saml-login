@@ -1,15 +1,14 @@
+"""Tests for the core module."""
+
+# ruff: noqa: PLC2701
 from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 from requests_mock import Mocker as RequestsMocker
 
-from rh_aws_saml_login.core import (
-    AwsAccount,
-    get_aws_accounts,
-    get_saml_auth,
-    select_aws_account,
-)
+from rh_aws_saml_login._core import get_aws_accounts, get_saml_auth, select_aws_account
+from rh_aws_saml_login._models import AwsAccount
 
 
 @pytest.fixture
