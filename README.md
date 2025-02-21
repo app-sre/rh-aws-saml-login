@@ -195,6 +195,17 @@ Opens the AWS web console for the `s3` service in the `app-sre` account.
 
 ## Development
 
+`rh-aws-saml-login` uses [uv](https://github.com/astral-sh/uv) for project and dependency management. Follow the [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/) to install it in on your local machine.
+
+### Setup
+
+1. Fork the repository and clone it
+1. Create a Python development environment with `make dev-venv`
+1. Activate the virtual environment with `source .venv/bin/activate`
+1. Happy coding!
+
+### Release
+
 - Update CHANGELOG.md with the new version number and date
 - Bump the version number in [pyproject.toml](/pyproject.toml)
 
