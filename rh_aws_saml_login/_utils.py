@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from rich import print  # noqa: A004
+from rich import print as rich_print
 from rich.text import Text
 
 
@@ -26,7 +26,7 @@ def blend_text(
 
 
 def bye() -> None:
-    print(
+    rich_print(
         "Thank you for using rh-aws-saml-login. :man_bowing: Have a great day ahead! :red_heart-emoji:"
     )
 

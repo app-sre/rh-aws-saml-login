@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0
+
+### Features
+
+* Jupyter notebook support (#149)
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.7.0
 
 ### Features
