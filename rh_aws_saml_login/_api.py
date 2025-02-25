@@ -3,10 +3,10 @@ import logging
 from ._consts import RH_SAML_URL, AwsRegion
 from ._core import (
     assume_role_with_saml,
-    get_aws_account,
     get_aws_accounts,
     get_saml_auth,
     is_kerberos_ticket_valid,
+    select_aws_account,
 )
 from ._exceptions import NoAwsAccountError, NoKerberosTicketError
 from ._models import AwsCredentials
@@ -27,6 +27,6 @@ def get_aws_credentials(
     aws_accounts = get_aws_accounts(
         aws_url, saml_token, session_timeout_seconds, region
     )
-    if not (account := get_aws_account(aws_accounts, account_name)):
+    if not (account := select_aws_account(aws_accounts, account_name)):
         raise NoAwsAccountError(account_name)
     return assume_role_with_saml(account, saml_token)
