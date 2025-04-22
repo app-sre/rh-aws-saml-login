@@ -74,6 +74,7 @@ def open_aws_shell(
         capture_output=False,
         env={
             "AWS_ACCOUNT_NAME": account.name,
+            "AWS_ACCOUNT_UID": account.uid,
             "AWS_ROLE_NAME": account.role_name,
             "AWS_ROLE_ARN": account.role_arn,
             "AWS_ACCESS_KEY_ID": credentials.access_key,
