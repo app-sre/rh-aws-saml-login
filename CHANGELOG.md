@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1
+
+### Features
+
+* `AWS_ACCOUNT_UID` environment variable
+
 ## 0.8.0
 
 ### Features
