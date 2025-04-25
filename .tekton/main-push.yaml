@@ -40,7 +40,8 @@ spec:
       value: main
     - name: pathInRepo
       value: pipelines/multi-arch-build-pipeline.yaml
-  taskRunTemplate: {}
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-rh-aws-saml-login-main
   workspaces:
   - name: workspace
     volumeClaimTemplate:
