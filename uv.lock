@@ -134,14 +134,14 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.1.8"
+version = "8.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
+sdist = { url = "https://files.pythonhosted.org/packages/cd/0f/62ca20172d4f87d93cf89665fbaedcd560ac48b465bd1d92bfc7ea6b0a41/click-8.2.0.tar.gz", hash = "sha256:f5452aeddd9988eefa20f90f05ab66f17fce1ee2a36907fd30b05bbb5953814d", size = 235857 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/d4/7ebdbd03970677812aac39c869717059dbb71a4cfc033ca6e5221787892c/click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2", size = 98188 },
+    { url = "https://files.pythonhosted.org/packages/a2/58/1f37bf81e3c689cc74ffa42102fa8915b59085f54a6e4a80bc6265c0f6bf/click-8.2.0-py3-none-any.whl", hash = "sha256:6b303f0b2aa85f1cb4e5303078fadcbcd4e476f114fab9b5007005711839325c", size = 102156 },
 ]
 
 [[package]]
@@ -258,18 +258,18 @@ wheels = [
 
 [[package]]
 name = "iterfzf"
-version = "1.6.0.60.3"
+version = "1.7.0.62.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c2/b4/76c4b0d2c5c5d8c7d0e6d456d237a1de27f61e5f5feefee4d9e411c9a673/iterfzf-1.6.0.60.3.tar.gz", hash = "sha256:a28de892c92af80e669f1335f8e1e6ebc523c0f52011088cbef710e0d374b13d", size = 1822942 }
+sdist = { url = "https://files.pythonhosted.org/packages/9e/98/7c2f37102de754deb131876194951f709e3a14aec929e2f3f53929cc2108/iterfzf-1.7.0.62.0.tar.gz", hash = "sha256:f53122e628b20cde218e244fb5d00a9be73abb1f0ba6c76755dcdbc31e822231", size = 1827509 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/07/fc/1091c293e92de2c6f568067fbace7f0242cf8c68fd31a76101b80be2c9e5/iterfzf-1.6.0.60.3-py3-none-macosx_10_7_x86_64.macosx_10_9_x86_64.whl", hash = "sha256:e1ea938bc46d65b3225ce6d7cab36d1479108fb225d6869dd816129f2cc81313", size = 1700069 },
-    { url = "https://files.pythonhosted.org/packages/8b/38/a5e44ce89611922cf16601c90a6b3f3e5cd1c1d1f07ceb8fb73cc16ba7af/iterfzf-1.6.0.60.3-py3-none-macosx_11_0_arm64.whl", hash = "sha256:6210b2d2b1452619e85de7b43602cb6162a57cae7357f876600c51d48d9d1945", size = 1611004 },
-    { url = "https://files.pythonhosted.org/packages/af/80/d6ec8acb250bd1b24b66cd032afd10cb42ac937b291424b74254df6cf366/iterfzf-1.6.0.60.3-py3-none-manylinux_1_2_aarch64.manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:08ac88ed0cbb471cdc5153aa35e97f00264545e9b37ada3dfa2e4134f3a0bffb", size = 1480675 },
-    { url = "https://files.pythonhosted.org/packages/a3/ad/511b6af34da1b74397be015f82d6b562c3f286ec903f7ba01fd0f53d02d7/iterfzf-1.6.0.60.3-py3-none-manylinux_1_2_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4928a83364a5dc4af5cc2b4be3eefc7bdab9ad7ad8db5328eeaa59bca9d91191", size = 1605602 },
-    { url = "https://files.pythonhosted.org/packages/9f/2a/f7ad869b8c5f44eff81575a7a3eb67cf8316aaef99b2792288822d0219ee/iterfzf-1.6.0.60.3-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:13386f2b1196d11563a29169d0af20d8487337a41dcdc87198d7d77c11af8fe6", size = 1479035 },
-    { url = "https://files.pythonhosted.org/packages/c9/6f/f172133518fab8c85ec45a013e0a9d2e5c69b633c4691273ee82ea1c7231/iterfzf-1.6.0.60.3-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3421bca1e34a36f7676afa93330ace11ef05c756f176dc39484a091c44110517", size = 1598797 },
-    { url = "https://files.pythonhosted.org/packages/3a/2d/c1256b5358d9802808545e5b40d0769815a02508006ea04fc713d2a2d228/iterfzf-1.6.0.60.3-py3-none-win_amd64.whl", hash = "sha256:c3a367f14e173d0bd41c4876fe35f43caf5de12c30c2f905e2949dc3fc350952", size = 1829165 },
-    { url = "https://files.pythonhosted.org/packages/d7/9c/8131d4d034a3e5959565fa5f82a1db871cb9de9c4dce9255000b43a5adfb/iterfzf-1.6.0.60.3-py3-none-win_arm64.whl", hash = "sha256:03358e2aa256536761b5c038e4a5d587dfa8a00049e2a231a0ee621ed9397a5f", size = 1684663 },
+    { url = "https://files.pythonhosted.org/packages/db/cc/07dce7c7e176dcf0a18735889e7c3875c07e0e0f1cd41ae25f7c56186c98/iterfzf-1.7.0.62.0-py3-none-macosx_10_7_x86_64.macosx_10_9_x86_64.whl", hash = "sha256:e1599e9573796571ae7b978a710f3cba0a0beebc8777126725a2474369f13d5b", size = 1705497 },
+    { url = "https://files.pythonhosted.org/packages/c0/98/6f119a69bd649952a34523e257885520a2bbdc6447a701dfe83201cfc3c4/iterfzf-1.7.0.62.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:e77dd1627175902ba830e1e3b3049fffd6101fc2c309df684b8c750800b63d9f", size = 1618607 },
+    { url = "https://files.pythonhosted.org/packages/88/62/87a612acd21a7f30fb4e40fe3972e07f2ef2a68c6bad803de05f8c1d7770/iterfzf-1.7.0.62.0-py3-none-manylinux_1_2_aarch64.manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:78d737e62abca67f51c0aecc4a41e3b3e00233403752def43600297f7da811ae", size = 1485830 },
+    { url = "https://files.pythonhosted.org/packages/8c/66/13f339d1780be56f92e63e3fbae707739a5051a35adfa4dcda0b98560aee/iterfzf-1.7.0.62.0-py3-none-manylinux_1_2_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c90f36f3d8925a7cb39a9394eb5358008b9a9f188de61699c3313a02ab1721ed", size = 1609949 },
+    { url = "https://files.pythonhosted.org/packages/9d/68/72c360043ce9d5fbebac9054f234fb55fac6812a19d4a5ef9e2d278cf094/iterfzf-1.7.0.62.0-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ce7252ac1911aa57b2ab647cf0f04a1621cb79c37c20175724b6f540a900092d", size = 1482926 },
+    { url = "https://files.pythonhosted.org/packages/79/b1/5ddf580c62c0ba3d0da2412f665b743fd8b789268a17de10fdae99a1f447/iterfzf-1.7.0.62.0-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:98c594311173aca1d3f74d84c4278d930e80a532c79fcd1bdbc80a16949144a6", size = 1604339 },
+    { url = "https://files.pythonhosted.org/packages/d3/5c/56b1908d1e0eb9944380ebe2a4c14cdd8d4c89e5482b95e48a16ef2e8f05/iterfzf-1.7.0.62.0-py3-none-win_amd64.whl", hash = "sha256:740c1a0a7e6ca77dc0b5cb9d5354084e2728bd13a8cfb152917a26ca33f98bd9", size = 1833604 },
+    { url = "https://files.pythonhosted.org/packages/84/4c/eb9ce25c02d974441d6aed9c18a142f209be1f91a6dc06cd55cc7ba7b9ab/iterfzf-1.7.0.62.0-py3-none-win_arm64.whl", hash = "sha256:e3c6890d2c7339e172651dfc2ef235a698f6187b73c72d91ba67a9c7b1fe1bf8", size = 1689545 },
 ]
 
 [[package]]
