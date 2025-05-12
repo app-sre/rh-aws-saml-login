@@ -149,6 +149,14 @@ def version_callback(*, value: bool) -> None:
         raise typer.Exit
 
 
+def region_callback(region: str) -> str:
+    if region not in AwsRegion:
+        rich_print(f"{region} not in {[r.value for r in AwsRegion]}")
+        raise typer.Exit
+
+    return region
+
+
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
 def cli(  # noqa: PLR0917
     account_name: Annotated[
@@ -160,12 +168,13 @@ def cli(  # noqa: PLR0917
     ] = None,
     command: Annotated[list[str] | None, typer.Argument(help="Command to run")] = None,
     region: Annotated[
-        AwsRegion,
+        str,
         typer.Option(
             help="AWS region",
             envvar="RH_AWS_REGION",
+            callback=region_callback,
         ),
-    ] = AwsRegion.US_EAST_1,
+    ] = AwsRegion.US_EAST_1.value,
     saml_url: Annotated[
         str,
         typer.Option(
