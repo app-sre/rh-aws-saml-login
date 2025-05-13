@@ -1,6 +1,6 @@
 [project]
 name = "rh-aws-saml-login"
-version = "0.8.1"
+version = "0.8.2"
 description = "A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT License" }
@@ -15,6 +15,7 @@ classifiers = [
 requires-python = ">= 3.11"
 dependencies = [
     "boto3>=1.35.33",
+    "click==8.1.0",
     "humanize>=4.10.0",
     "iterfzf>=1.4.0.54.3",
     "pyquery>=2.0.1",

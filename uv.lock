@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11"
 
 [[package]]
@@ -134,14 +133,14 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.2.0"
+version = "8.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cd/0f/62ca20172d4f87d93cf89665fbaedcd560ac48b465bd1d92bfc7ea6b0a41/click-8.2.0.tar.gz", hash = "sha256:f5452aeddd9988eefa20f90f05ab66f17fce1ee2a36907fd30b05bbb5953814d", size = 235857 }
+sdist = { url = "https://files.pythonhosted.org/packages/45/2b/7ebad1e59a99207d417c0784f7fb67893465eef84b5b47c788324f1b4095/click-8.1.0.tar.gz", hash = "sha256:977c213473c7665d3aa092b41ff12063227751c41d7b17165013e10069cc5cd2", size = 329986 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a2/58/1f37bf81e3c689cc74ffa42102fa8915b59085f54a6e4a80bc6265c0f6bf/click-8.2.0-py3-none-any.whl", hash = "sha256:6b303f0b2aa85f1cb4e5303078fadcbcd4e476f114fab9b5007005711839325c", size = 102156 },
+    { url = "https://files.pythonhosted.org/packages/86/3e/3a523bdd24510288b1b850428e01172116a29268378b1da9a8d0b894a115/click-8.1.0-py3-none-any.whl", hash = "sha256:19a4baa64da924c5e0cd889aba8e947f280309f1a2ce0947a3e3a7bcb7cc72d6", size = 96400 },
 ]
 
 [[package]]
@@ -553,10 +552,11 @@ wheels = [
 
 [[package]]
 name = "rh-aws-saml-login"
-version = "0.8.1"
+version = "0.8.2"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
+    { name = "click" },
     { name = "humanize" },
     { name = "iterfzf" },
     { name = "pyquery" },
@@ -579,6 +579,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = ">=1.35.33" },
+    { name = "click", specifier = "==8.1.0" },
     { name = "humanize", specifier = ">=4.10.0" },
     { name = "iterfzf", specifier = ">=1.4.0.54.3" },
     { name = "pyquery", specifier = ">=2.0.1" },
