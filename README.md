@@ -37,6 +37,12 @@ You also need the python3 header files for your system in order to build this to
 sudo dnf install python3-devel
 ```
 
+Clang is also required for Fedora CSB:
+
+```shell
+sudo dnf install clang
+```
+
 ### Recommended Installation Method
 
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
