@@ -15,7 +15,7 @@ classifiers = [
 requires-python = ">= 3.11"
 dependencies = [
     "boto3>=1.35.33",
-    "click==8.1.0",
+    "click==8.2.1",
     "humanize>=4.10.0",
     "iterfzf>=1.4.0.54.3",
     "pyquery>=2.0.1",
