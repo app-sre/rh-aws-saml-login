@@ -25,23 +25,13 @@ The `rh-aws-saml-login` CLI is a tool that simplifies the process of logging int
 
 ### Prerequisites
 
-`rh-aws-saml-login` needs the `krb5` library to work. On most system, e.g., MacOS, this library is already installed. On CSB Fedora, you need to install the Kerberos development package:
+On Fedora (RH CSB at least), the following libraries are required:
 
 ```shell
-sudo dnf install krb5-devel
+sudo dnf install krb5-devel python3-devel clang
 ```
 
-You also need the python3 header files for your system in order to build this tool. On CSB Fedora these are installed with:
-
-```shell
-sudo dnf install python3-devel
-```
-
-Clang is also required for Fedora CSB:
-
-```shell
-sudo dnf install clang
-```
+These libraries should be pre-installed on MacOS but you may need to install them in other Linuxes.
 
 ### Recommended Installation Method
 
