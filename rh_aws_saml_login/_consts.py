@@ -32,6 +32,7 @@ class AwsRegion(StrEnum):
     IL_CENTRAL_1 = "il-central-1"
     ME_CENTRAL_1 = "me-central-1"
     ME_SOUTH_1 = "me-south-1"
+    MX_CENTRAL_1 = "mx-central-1"
     SA_EAST_1 = "sa-east-1"
     US_EAST_1 = "us-east-1"
     US_EAST_2 = "us-east-2"
