@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.2
+
+### Features
+
+* Add support for `mx-central-1` AWS region.
+
+### Chore
+
+* Consolidate README for Fedora library requirements
+
 ## 0.8.1
 
 ### Features
