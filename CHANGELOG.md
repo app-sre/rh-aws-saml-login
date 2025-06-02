@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.3
+
+### Chore
+
+* Upgrade dependencies
+
+## 0.8.2
+
+### Chore
+
+* Pin `click`
+
 ## 0.8.1
 
 ### Features
