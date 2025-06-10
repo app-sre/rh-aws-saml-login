@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.2
+## 0.8.4
 
 ### Features
 
@@ -9,6 +9,17 @@
 ### Chore
 
 * Consolidate README for Fedora library requirements
+## 0.8.3
+
+### Chore
+
+* Upgrade dependencies
+
+## 0.8.2
+
+### Chore
+
+* Pin `click`
 
 ## 0.8.1
 
