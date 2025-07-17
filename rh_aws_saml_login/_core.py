@@ -1,8 +1,10 @@
+import base64
 import logging
 import os
 import re
 import subprocess
 import sys
+import tempfile
 
 import boto3
 import botocore
@@ -26,9 +28,16 @@ def is_kerberos_ticket_valid() -> bool:
         return False
 
 
-def kinit() -> None:
+def kinit(kerberos_keytab: str | None, kerberos_principal: str) -> None:
     """Acquire a kerberos ticket."""
-    run(["kinit"], check=True, capture_output=False)
+    cmd = ["kinit"]
+    with tempfile.NamedTemporaryFile() as keytab_file:
+        if kerberos_keytab:
+            # decode base64 keytab file and write it to a temporary file
+            keytab_file.write(base64.b64decode(kerberos_keytab))
+            keytab_file.flush()
+            cmd += ["-kt", str(keytab_file)]
+        run([*cmd, kerberos_principal], check=True, capture_output=False)
 
 
 def get_saml_auth(url: str) -> tuple[str, str]:

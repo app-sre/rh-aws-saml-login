@@ -211,6 +211,20 @@ def cli(  # noqa: PLR0917
         bool,
         typer.Option(help="Open the AWS console in browser instead of a local shell"),
     ] = False,
+    kerberos_keytab: Annotated[
+        str | None,
+        typer.Option(
+            help="Base64 encoded Kerberos keytab file. If set, it will be used to acquire a Kerberos ticket.",
+            envvar="RH_KERBEROS_KEYTAB",
+        ),
+    ] = None,
+    kerberos_principal: Annotated[
+        str,
+        typer.Option(
+            help="Kerberos principal to use for acquiring a Kerberos ticket.",
+            envvar="RH_KERBEROS_PRINCIPAL",
+        ),
+    ] = "",
     display_banner: Annotated[
         bool,
         typer.Option(
@@ -241,6 +255,8 @@ def cli(  # noqa: PLR0917
         console_service=console_service,
         assume_uid=assume_uid,
         assume_role_name=assume_role,
+        kerberos_keytab=kerberos_keytab,
+        kerberos_principal=kerberos_principal,
     )
     write_accounts_cache(accounts)
 
@@ -255,6 +271,8 @@ def _main(  # noqa: PLR0917
     console_service: str | None,
     assume_uid: str | None,
     assume_role_name: str,
+    kerberos_keytab: str | None = None,
+    kerberos_principal: str = "",
     *,
     console: bool,
 ) -> list[str]:
@@ -268,7 +286,7 @@ def _main(  # noqa: PLR0917
         if not is_kerberos_ticket_valid():
             progress.stop()
             logger.info("No valid Kerberos ticket found. Acquiring one ...")
-            kinit()
+            kinit(kerberos_keytab, kerberos_principal)
             progress.start()
         progress.update(task, completed=1)
 
