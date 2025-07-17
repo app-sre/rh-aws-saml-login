@@ -36,7 +36,7 @@ def kinit(kerberos_keytab: str | None, kerberos_principal: str) -> None:
             # decode base64 keytab file and write it to a temporary file
             keytab_file.write(base64.b64decode(kerberos_keytab))
             keytab_file.flush()
-            cmd += ["-kt", str(keytab_file)]
+            cmd += ["-kt", keytab_file.name]
         run([*cmd, kerberos_principal], check=True, capture_output=False)
 
 
