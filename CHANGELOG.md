@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0
+
+### Features
+
+* **Kerberos Keytab support**: Add support for granting Kerberos tickets using a keytab file. Supply the keytab file as a base64 encoded string via the `RH_KERBEROS_KEYTAB` environment variable or the `--kerberos-keytab` option.
+* **Environment Variables**: Add `RH_KERBEROS_KEYTAB` and `RH_KERBEROS_PRINCIPAL` environment variables for Kerberos authentication.
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.8.4
 
 ### Features
@@ -9,6 +20,7 @@
 ### Chore
 
 * Consolidate README for Fedora library requirements
+
 ## 0.8.3
 
 ### Chore
