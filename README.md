@@ -142,7 +142,7 @@ AWS_SECRET_ACCESS_KEY=...
 Feel free to import those environment variables in your shell or script. E.g.
 
 ```shell
-$ export $(rh-aws-saml-login --output shell <ACCOUNT_NAME>)
+$ export $(rh-aws-saml-login --output env <ACCOUNT_NAME>)
 $ aws s3 ls
 ...
 ```

@@ -1,6 +1,6 @@
 [project]
 name = "rh-aws-saml-login"
-version = "0.9.0"
+version = "0.10.0"
 description = "A CLI tool that allows you to log in and retrieve AWS temporary credentials using Red Hat SAML IDP"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT License" }
