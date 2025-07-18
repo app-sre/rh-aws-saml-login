@@ -129,9 +129,27 @@ $ rh-aws-saml-login app-sre-stage -- aws s3 ls
 Thank you for using rh-aws-saml-login. 🙇‍♂️ Have a great day ahead! ❤️
 ```
 
+Another non-interactive alternative is to use the `--output` option to retrieve the AWS credentials in a specific format. For example, to get the credentials in shell environment format:
+
+```shell
+$ rh-aws-saml-login --output env <ACCOUNT_NAME>
+AWS_ACCOUNT_NAME=<ACCOUNT_NAME>
+...
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+```
+
+Feel free to import those environment variables in your shell or script. E.g.
+
+```shell
+$ export $(rh-aws-saml-login --output env <ACCOUNT_NAME>)
+$ aws s3 ls
+...
+```
+
 ## Environment Variables
 
-`rh-aws-saml-login` sets the following environment variables:
+`rh-aws-saml-login` exposes the following environment variables:
 
 - `AWS_ACCOUNT_NAME`: The name/alias of the AWS account
 - `AWS_ACCOUNT_UID`: The uid of the AWS account

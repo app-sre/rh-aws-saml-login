@@ -7,6 +7,7 @@ import urllib
 from collections.abc import Generator
 from datetime import UTC
 from datetime import datetime as dt
+from enum import StrEnum
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
@@ -51,13 +52,40 @@ SCRIPT_START_TIME = dt.now(UTC)
 logger = logging.getLogger(__name__)
 
 
+class OutputFormat(StrEnum):
+    """Supported output formats"""
+
+    JSON = "json"
+    ENV = "env"
+
+
+def get_export_environment_variables(
+    account: AwsAccount,
+    credentials: AwsCredentials,
+    region: str,
+) -> dict:
+    """Get the environment variables to export AWS credentials."""
+    return {
+        "AWS_ACCOUNT_NAME": account.name,
+        "AWS_ACCOUNT_UID": account.uid,
+        "AWS_ROLE_NAME": account.role_name,
+        "AWS_ROLE_ARN": account.role_arn,
+        "AWS_ACCESS_KEY_ID": credentials.access_key,
+        "AWS_SECRET_ACCESS_KEY": credentials.secret_key,
+        "AWS_SESSION_TOKEN": credentials.session_token,
+        "AWS_REGION": region,
+    }
+
+
 def open_aws_shell(
     account: AwsAccount,
     credentials: AwsCredentials,
     region: str,
     command: list[str] | str | None = None,
+    *,
+    quiet: bool = False,
 ) -> None:
-    if not command:
+    if not quiet and not command:
         rich_print(
             dedent(f"""
             Spawning a new shell. Use exit or CTRL+d to leave it!
@@ -67,21 +95,13 @@ def open_aws_shell(
             :hourglass: {humanize.naturaltime(credentials.expiration, when=SCRIPT_START_TIME)} ({credentials.expiration.astimezone(tz=get_localzone())})
         """)
         )
+    if not command:
         command = os.environ.get("SHELL", "/bin/bash")
     run(
         command,
         check=False,
         capture_output=False,
-        env={
-            "AWS_ACCOUNT_NAME": account.name,
-            "AWS_ACCOUNT_UID": account.uid,
-            "AWS_ROLE_NAME": account.role_name,
-            "AWS_ROLE_ARN": account.role_arn,
-            "AWS_ACCESS_KEY_ID": credentials.access_key,
-            "AWS_SECRET_ACCESS_KEY": credentials.secret_key,
-            "AWS_SESSION_TOKEN": credentials.session_token,
-            "AWS_REGION": region,
-        },
+        env=get_export_environment_variables(account, credentials, region),
     )
 
 
@@ -123,6 +143,19 @@ def open_aws_console(
     })
     federated_url = f"{aws_federated_signin_endpoint}?{query_string}"
     run([*shlex.split(open_command), federated_url], check=False, capture_output=False)
+
+
+def display_credentials(
+    account: AwsAccount, credentials: AwsCredentials, region: str, output: OutputFormat
+) -> None:
+    """Display AWS credentials in the specified output format."""
+    env_vars = get_export_environment_variables(account, credentials, region)
+    match output:
+        case OutputFormat.JSON:
+            print(json.dumps(env_vars, indent=2))  # noqa: T201
+        case OutputFormat.ENV:
+            for key, value in env_vars.items():
+                print(f"{key}={value}")  # noqa: T201
 
 
 def write_accounts_cache(accounts: list[str]) -> None:
@@ -225,6 +258,21 @@ def cli(  # noqa: PLR0917
             envvar="RH_KERBEROS_PRINCIPAL",
         ),
     ] = "",
+    quiet: Annotated[
+        bool,
+        typer.Option(
+            help="Do not display any logging output or other messages!",
+            envvar="RH_QUIET",
+        ),
+    ] = False,
+    output: Annotated[
+        OutputFormat | None,
+        typer.Option(
+            help="Instead of opening the AWS console or shell, output the credentials in the specified format. Also implies --quiet.",
+            envvar="RH_OUTPUT",
+            case_sensitive=False,
+        ),
+    ] = None,
     display_banner: Annotated[
         bool,
         typer.Option(
@@ -237,10 +285,16 @@ def cli(  # noqa: PLR0917
     ] = None,
 ) -> None:
     """Login to AWS using SAML."""
-    logging.basicConfig(
-        level=logging.INFO if not debug else logging.DEBUG, format="%(message)s"
-    )
-    if display_banner:
+    log_level = logging.INFO
+    if output:
+        quiet = True
+    if debug:
+        log_level = logging.DEBUG
+    if quiet:
+        log_level = logging.ERROR
+    logging.basicConfig(level=log_level, format="%(message)s")
+
+    if display_banner and not quiet:
         rich_print(blend_text(BANNER, (32, 32, 255), (255, 32, 255)))
     if debug:
         enable_requests_logging()
@@ -257,6 +311,8 @@ def cli(  # noqa: PLR0917
         assume_role_name=assume_role,
         kerberos_keytab=kerberos_keytab,
         kerberos_principal=kerberos_principal,
+        output=output,
+        quiet=quiet,
     )
     write_accounts_cache(accounts)
 
@@ -273,12 +329,15 @@ def _main(  # noqa: PLR0917
     assume_role_name: str,
     kerberos_keytab: str | None = None,
     kerberos_principal: str = "",
+    output: OutputFormat | None = None,
     *,
     console: bool,
+    quiet: bool,
 ) -> list[str]:
     with Progress(
         SpinnerColumn(finished_text="✅"),
         TextColumn("[progress.description]{task.description}"),
+        disable=quiet,
     ) as progress:
         task = progress.add_task(
             description="Test for a valid Kerberos ticket ...", total=1
@@ -325,9 +384,12 @@ def _main(  # noqa: PLR0917
             credentials = assume_role(account, credentials)
             progress.update(task, completed=1)
 
-    if console:
+    if output:
+        display_credentials(account, credentials, region, output)
+    elif console:
         open_aws_console(open_command, credentials, console_service)
     else:
-        open_aws_shell(account, credentials, region, command)
-    bye()
+        open_aws_shell(account, credentials, region, command, quiet=quiet)
+    if not quiet:
+        bye()
     return [acc.name for acc in aws_accounts]

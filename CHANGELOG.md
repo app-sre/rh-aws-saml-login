@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1ß.0
+
+### Features
+
+* **Display AWS credentials**: Add `--output` option to retrieve AWS credentials in different formats (json, env).
+
+### Bug Fixes
+
+* Fix Keytab support for Kerberos authentication.
+
 ## 0.9.0
 
 ### Features
