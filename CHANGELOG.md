@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1ß.0
+## 0.10.0
 
 ### Features
 
