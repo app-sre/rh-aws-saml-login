@@ -8,8 +8,8 @@ class AwsAccount:
     uid: str
     role_name: str
     role_arn: str
-    session_timeout_seconds: int
-    region: str
+    session_timeout_seconds: int = 3600
+    region: str = "us-east-1"
 
     @property
     def principle_arn(self) -> str:
