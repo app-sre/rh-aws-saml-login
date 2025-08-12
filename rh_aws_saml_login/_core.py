@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree as ET  # noqa: S405
 
 import boto3
 import botocore
@@ -53,12 +54,62 @@ def get_saml_auth(url: str) -> tuple[str, str]:
     return aws_url, saml_token
 
 
+def get_single_account_from_saml(saml_token: str) -> AwsAccount | None:
+    """Return an AWS account from the SAML token if exactly one role is found."""
+    saml_response_xml = base64.b64decode(saml_token).decode("utf-8")
+    root = ET.fromstring(saml_response_xml)  # noqa: S314
+    namespaces = {
+        "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
+        "saml": "urn:oasis:names:tc:SAML:2.0:assertion",
+    }
+    if (
+        role_attribute := root.find(
+            ".//saml:Attribute[@Name='https://aws.amazon.com/SAML/Attributes/Role']",
+            namespaces,
+        )
+    ) is None:
+        msg = "No role attribute found in SAML response"
+        raise ValueError(msg)
+
+    role_values = role_attribute.findall("./saml:AttributeValue", namespaces)
+
+    if len(role_values) == 1:
+        # Exactly one role found
+        if (role_value_element := role_values[0]) is None:
+            msg = "No role value found in SAML response"
+            raise ValueError(msg)
+        if not role_value_element.text:
+            msg = "Empty role value found in SAML response"
+            raise ValueError(msg)
+
+        role_arn = role_value_element.text.split(",")[0]
+
+        arn_parts = role_arn.split(":")
+        return AwsAccount(
+            # the SAML response does not provide a friendly name, so we use the account ID and role name
+            name=arn_parts[4],
+            uid=arn_parts[4],
+            role_name=arn_parts[5].split("/")[1],
+            role_arn=role_arn,
+        )
+    return None
+
+
 def get_aws_accounts(
     aws_url: str, saml_token: str, saml_token_duration_seconds: int, region: str
 ) -> list[AwsAccount]:
-    """Get all user available AWS accounts from the SAML endpoint."""
+    """Get all AWS accounts accessible to the user."""
+    # The AWS SAML login page redirects directly to the account console when only one account is found.
+    # Unfortunately, the SAML token does not contain the account names.
+    # So we stick with the AWS SAML login html parsing if the user has multiple accounts.
+    if aws_account := get_single_account_from_saml(saml_token):
+        aws_account.session_timeout_seconds = saml_token_duration_seconds
+        aws_account.region = region
+        return [aws_account]
+
     r = requests.post(aws_url, data={"SAMLResponse": saml_token}, timeout=10)
     r.raise_for_status()
+
     p = pq(r.text).xhtml_to_html()
     accounts = p("div.saml-account")
     if not accounts:
@@ -108,8 +159,10 @@ def get_aws_account(
     aws_accounts: list[AwsAccount], account_name: str | None
 ) -> AwsAccount | None:
     """Select and return an AWS account from the list of available accounts."""
-    role = None
+    if len(aws_accounts) == 1:
+        return aws_accounts[0]
 
+    role = None
     if not account_name:
         items = [f"{acc.name:<40} {acc.role_name}" for acc in aws_accounts]
         selected_item = iterfzf(

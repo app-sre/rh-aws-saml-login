@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.1
+
+### Bug Fixes
+
+* Fix `No AWS accounts found` exception when the user has access to only one account. #409
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.10.0
 
 ### Features
