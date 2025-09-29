@@ -100,6 +100,18 @@ $ aws s3 ls
 
 This spawns a new shell with all required AWS environment variables set. See the [Environment Variables](#environment-variables) section for more information.
 
+Instead of selecting an account interactively, you can also provide the account name (including the role) as argument:
+
+```shell
+rh-aws-saml-login <ACCOUNT_NAME>
+```
+
+The `<ACCOUNT_NAME>` parameter supports several formats for flexible account and role specification:
+
+- **Account name only**: Use the AWS account name or alias (e.g., `my-shiny-aws-account`, `app-sre-stage`)
+- **Account with specific role**: Specify both account and role using the format `<ACCOUNT>/<ROLE>` (e.g., `my-shiny-aws-account/PowerUserAccess`, `app-sre/1234-Admin`)
+- **Current already logged-in account**: Use `.` to automatically use the value from the `$AWS_ACCOUNT_NAME` environment variable
+
 ### Non-interactive mode
 
 Instead of running the interactive mode, you can also use `rh-aws-saml-login` to run any arbitrary command with the AWS environment variables set:
@@ -107,6 +119,8 @@ Instead of running the interactive mode, you can also use `rh-aws-saml-login` to
 ```shell
 rh-aws-saml-login <ACCOUNT_NAME> -- <COMMAND> [ARGUMENTS]
 ```
+
+The `<ACCOUNT_NAME>` parameter follows the same format as described in the interactive mode section above (account name, account/role, environment variable).
 
 For example:
 
@@ -138,6 +152,8 @@ AWS_ACCOUNT_NAME=<ACCOUNT_NAME>
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
 ```
+
+The `<ACCOUNT_NAME>` parameter supports the same formats as described above.
 
 Feel free to import those environment variables in your shell or script. E.g.
 

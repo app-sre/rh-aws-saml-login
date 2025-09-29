@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.0
+
+### Features
+
+* Add support for specifying AWS roles directly in the account name CLI parameter
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.10.1
 
 ### Bug Fixes

@@ -156,13 +156,12 @@ def select_aws_account(
 
 
 def get_aws_account(
-    aws_accounts: list[AwsAccount], account_name: str | None
+    aws_accounts: list[AwsAccount], account_name: str | None, role: str | None = None
 ) -> AwsAccount | None:
     """Select and return an AWS account from the list of available accounts."""
     if len(aws_accounts) == 1:
         return aws_accounts[0]
 
-    role = None
     if not account_name:
         items = [f"{acc.name:<40} {acc.role_name}" for acc in aws_accounts]
         selected_item = iterfzf(

@@ -187,7 +187,7 @@ def cli(  # noqa: PLR0917
     account_name: Annotated[
         str | None,
         typer.Argument(
-            help="AWS account name. '.' as shortcut to use $AWS_ACCOUNT_NAME.",
+            help="AWS account name. Supports: account name (e.g., 'my-account'), account/role format (e.g., 'my-account/PowerUserAccess'), or '.' for $AWS_ACCOUNT_NAME environment variable.",
             autocompletion=complete_account,
         ),
     ] = None,
@@ -298,8 +298,15 @@ def cli(  # noqa: PLR0917
         rich_print(blend_text(BANNER, (32, 32, 255), (255, 32, 255)))
     if debug:
         enable_requests_logging()
+
+    role = None
+    if account_name and "/" in account_name:
+        # when account_name contains a '/', split it into account_name and role
+        account_name, role = account_name.split("/", 1)
+
     accounts = _main(
         account_name=account_name,
+        role=role,
         region=region,
         console=console,
         saml_url=saml_url,
@@ -319,6 +326,7 @@ def cli(  # noqa: PLR0917
 
 def _main(  # noqa: PLR0917
     account_name: str | None,
+    role: str | None,
     region: str,
     saml_url: str,
     session_timeout_seconds: int,
@@ -359,8 +367,11 @@ def _main(  # noqa: PLR0917
         )
 
         progress.stop()
-        if not (account := get_aws_account(aws_accounts, account_name)):
-            logger.error("Account not found: %s", account_name)
+        if not (account := get_aws_account(aws_accounts, account_name, role)):
+            if role:
+                logger.error("Account with role not found: %s/%s", account_name, role)
+            else:
+                logger.error("Account not found: %s", account_name)
             sys.exit(1)
         progress.start()
         progress.update(task, completed=1)
