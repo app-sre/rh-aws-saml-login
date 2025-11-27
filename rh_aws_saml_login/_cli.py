@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import platform
 import shlex
 import sys
 import urllib
@@ -57,6 +58,15 @@ class OutputFormat(StrEnum):
 
     JSON = "json"
     ENV = "env"
+
+
+def get_platform_open() -> str:
+    """Return the most likely option of an open command based on the platform."""
+    match platform.system().lower():
+        case "linux":
+            return "xdg-open"
+        case _:
+            return "open"
 
 
 def get_export_environment_variables(
@@ -184,6 +194,14 @@ def version_callback(*, value: bool) -> None:
 
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
 def cli(  # noqa: PLR0917
+    open_command: Annotated[
+        str,
+        typer.Option(
+            help="Command to open the browser (e.g. 'xdg-open' on Linux)",
+            envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
+            default_factory=get_platform_open,
+        ),
+    ],
     account_name: Annotated[
         str | None,
         typer.Argument(
@@ -212,13 +230,6 @@ def cli(  # noqa: PLR0917
             envvar="RH_AWS_SESSION_TIMEOUT",
         ),
     ] = 60,
-    open_command: Annotated[
-        str,
-        typer.Option(
-            help="Command to open the browser (e.g. 'xdg-open' on Linux)",
-            envvar="RH_AWS_SAML_LOGIN_OPEN_COMMAND",
-        ),
-    ] = "open",
     console_service: Annotated[
         AwsConsoleService | None,
         typer.Option(
