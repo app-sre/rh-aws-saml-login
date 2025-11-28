@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0
+
+### Features
+
+* Set open-command defaults by platform #553
+
 ## 0.11.0
 
 ### Features
