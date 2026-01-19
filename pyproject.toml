@@ -19,7 +19,7 @@ dependencies = [
     "humanize>=4.10.0",
     "iterfzf>=1.4.0.54.3",
     "pyquery>=2.0.1",
-    "requests-kerberos>=0.15.0",
+    "requests-gssapi>=1.4.0",
     "rich>=13.9.1",
     "typer>=0.16.0",
     "tzlocal>=5.2",
@@ -116,7 +116,7 @@ disallow_incomplete_defs = true
 # Below are all of the packages that don't implement stub packages. Mypy will throw an error if we don't ignore the
 # missing imports. See: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
 module = [
-    "requests_kerberos.*",
+    "requests_gssapi.*",
     "iterfzf.*",
     "botocore.*",
     "boto3.*",
