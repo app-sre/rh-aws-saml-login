@@ -45,7 +45,7 @@ BANNER = r"""
 """
 APP_NAME = "rh-aws-saml-login"
 APP_DIR = Path(typer.get_app_dir(APP_NAME))
-APP_DIR.mkdir(exist_ok=True)
+APP_DIR.mkdir(exist_ok=True, parents=True)
 ACCOUNT_CACHE = APP_DIR / "account_cache.json"
 
 SCRIPT_START_TIME = dt.now(UTC)
