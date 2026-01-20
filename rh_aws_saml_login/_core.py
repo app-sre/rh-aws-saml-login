@@ -12,7 +12,7 @@ import botocore
 import requests
 from iterfzf import iterfzf
 from pyquery import PyQuery as pq  # noqa: N813
-from requests_gssapi import OPTIONAL, HTTPSPNEGOAuth
+from requests_gssapi import HTTPSPNEGOAuth
 
 from ._models import AwsAccount, AwsCredentials
 from ._utils import run
@@ -44,7 +44,7 @@ def kinit(kerberos_keytab: str | None, kerberos_principal: str) -> None:
 def get_saml_auth(url: str) -> tuple[str, str]:
     """Get the SAML token and AWS authentification URL."""
     with requests.Session() as session:
-        session.auth = HTTPSPNEGOAuth(mutual_authentication=OPTIONAL)
+        session.auth = HTTPSPNEGOAuth()
         r = session.get(url)
         r.raise_for_status()
         p = pq(r.text).xhtml_to_html()
