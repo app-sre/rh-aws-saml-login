@@ -18,6 +18,7 @@ import humanize
 import requests
 import typer
 from rich import print as rich_print
+from rich.logging import RichHandler
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from tzlocal import get_localzone
 
@@ -303,7 +304,11 @@ def cli(  # noqa: PLR0917
         log_level = logging.DEBUG
     if quiet:
         log_level = logging.ERROR
-    logging.basicConfig(level=log_level, format="%(message)s")
+    logging.basicConfig(
+        level=log_level,
+        format="%(message)s",
+        handlers=[RichHandler(rich_tracebacks=True)],
+    )
 
     if display_banner and not quiet:
         rich_print(blend_text(BANNER, (32, 32, 255), (255, 32, 255)))
