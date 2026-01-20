@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.13.0
+
+### Features
+
+* Replace outdated `requests-kerberos` with `requests-gssapi` for Kerberos authentication #622
+
+### Bug Fixes
+
+* Fix `$HOME/.config/rh-aws-saml-login` directory creation if parent directories do not exist #626
+* Fix exception logging #627
+
+### Chore
+
+* Upgrade dependencies
+
 ## 0.12.0
 
 ### Features
