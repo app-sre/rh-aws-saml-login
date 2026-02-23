@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.1
+
+### Bug Fixes
+
+* Suppress Python stacktrace for failing `kinit` command #663
+
 ## 0.13.0
 
 ### Features
