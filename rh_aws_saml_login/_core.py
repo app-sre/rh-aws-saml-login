@@ -38,7 +38,10 @@ def kinit(kerberos_keytab: str | None, kerberos_principal: str) -> None:
             keytab_file.write(base64.b64decode(kerberos_keytab))
             keytab_file.flush()
             cmd += ["-kt", keytab_file.name]
-        run([*cmd, kerberos_principal], check=True, capture_output=False)
+        try:
+            run([*cmd, kerberos_principal], check=True, capture_output=False)
+        except subprocess.CalledProcessError:
+            sys.exit(1)
 
 
 def get_saml_auth(url: str) -> tuple[str, str]:
