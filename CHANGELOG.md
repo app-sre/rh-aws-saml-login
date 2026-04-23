@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.2
+
+### Chore
+
+* Upgrade dependencies
+* Update `--console-service` list of services with a console URL to include `kafka` (aka MSK) and others.
+
 ## 0.13.1
 
 ### Bug Fixes
