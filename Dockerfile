@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311@sha256:6ff4fa18cca7708ab388983bd336da82351d49427aa1a124590326a55a12b456 AS base
+FROM registry.access.redhat.com/ubi9/python-311@sha256:dfecc245c24944951c304aa8066e232a58fd3d9f93809cd77f9470eef59391a0 AS base
 COPY --from=ghcr.io/astral-sh/uv:0.11.16@sha256:440fd6477af86a2f1b38080c539f1672cd22acb1b1a47e321dba5158ab08864d /uv /bin/uv
 COPY LICENSE /licenses/
 
