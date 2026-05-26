@@ -2,14 +2,18 @@
 
 # ruff: noqa: PLC2701
 import base64
-from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from requests_mock import Mocker as RequestsMocker
 
 from rh_aws_saml_login._core import get_aws_accounts, get_saml_auth, select_aws_account
 from rh_aws_saml_login._models import AwsAccount
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from requests_mock import Mocker as RequestsMocker
 
 
 @pytest.fixture

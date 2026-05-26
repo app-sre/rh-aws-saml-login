@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311@sha256:a0bdb55576fc5b8d6704279307817828ef027e1065533ceba133fe9516003a6c AS base
+FROM registry.access.redhat.com/ubi9/python-314@sha256:8b6fccf90752f801ba1fd3a92f8a6dbc0971a2f446cfb8f6ad299909e0bf927b AS base
 COPY --from=ghcr.io/astral-sh/uv:0.11.18@sha256:78bc42400d77b0678ba95765305c826652ed5431f399257271dda681d0318f03 /uv /bin/uv
 COPY LICENSE /licenses/
 
@@ -7,6 +7,10 @@ ENV \
     UV_PROJECT_ENVIRONMENT=$APP_ROOT \
     # disable uv cache. it doesn't make sense in a container
     UV_NO_CACHE=true
+
+USER root
+RUN dnf install -y make gcc krb5-devel && dnf clean all && rm -rf /var/cache/dnf /var/cache/yum
+USER 1001
 
 COPY pyproject.toml uv.lock README.md ./
 # Test lock file is up to date
