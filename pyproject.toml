@@ -57,7 +57,6 @@ only-include = ["rh_aws_saml_login"]
 
 [tool.ruff]
 line-length = 88
-target-version = 'py314'
 src = ["rh_aws_saml_login"]
 extend-exclude = [".local", ".cache"]
 fix = true
