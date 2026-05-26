@@ -99,6 +99,15 @@ preview = true
 [tool.ruff.lint.isort]
 known-first-party = ["rh_aws_saml_login"]
 
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+runtime-evaluated-decorators = [
+    "pydantic.validate_call",
+    "typer.Typer.command",
+    "pydantic.dataclasses.dataclass",
+    "dataclasses.dataclass",
+]
+
 [tool.mypy]
 files = ["rh_aws_saml_login"]
 enable_error_code = ["truthy-bool", "redundant-expr"]

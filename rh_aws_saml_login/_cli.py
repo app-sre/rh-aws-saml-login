@@ -5,14 +5,13 @@ import platform
 import shlex
 import sys
 import urllib
-from collections.abc import Generator
 from datetime import UTC
 from datetime import datetime as dt
 from enum import StrEnum
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import humanize
 import requests
@@ -34,6 +33,9 @@ from ._core import (
 )
 from ._models import AwsAccount, AwsCredentials
 from ._utils import blend_text, bye, enable_requests_logging, run
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 app = typer.Typer(rich_markup_mode="rich")
 BANNER = r"""
