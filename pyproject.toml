@@ -8,9 +8,11 @@ readme = "README.md"
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">= 3.14"
+requires-python = ">= 3.12"
 dependencies = [
     "boto3>=1.35.33",
     "click<8.4.0",

@@ -4,7 +4,7 @@
 
 ### Breaking Changes
 
-* Drop support for Python 3.11, 3.12, and 3.13. Minimum required Python version is now 3.14.
+* Drop support for Python 3.11
 
 ## 0.13.2
 
