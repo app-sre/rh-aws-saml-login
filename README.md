@@ -13,7 +13,7 @@ A CLI tool that allows you to log in and retrieve AWS temporary credentials usin
 
 ## Pre-requisites
 
-- Python 3.11 or later
+- Python 3.14 or later
 - Connected to Red Hat VPN
 - A Red Hat managed computer (Kerberos must be installed and configured) and you are logged in with your Red Hat account
 
@@ -38,13 +38,13 @@ These libraries should be pre-installed on MacOS but you may need to install the
 The recommended way to install `rh-aws-saml-login` is to use the [uv](https://docs.astral.sh/uv/) tool:
 
 ```shell
-uv tool install rh-aws-saml-login
+uv tool install rh-aws-saml-login -p python3.14
 ```
 
 and upgrade an existing installation with:
 
 ```shell
-uv tool upgrade rh-aws-saml-login
+uv tool upgrade rh-aws-saml-login -p python3.14
 ```
 
 ### Alternative Installation Methods

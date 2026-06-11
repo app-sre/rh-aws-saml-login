@@ -181,7 +181,7 @@ def read_accounts_cache() -> list[str]:
     return []
 
 
-def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str, None, None]:  # noqa: ARG001
+def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str]:  # noqa: ARG001
     for name in read_accounts_cache():
         if name.startswith(incomplete):
             yield name
