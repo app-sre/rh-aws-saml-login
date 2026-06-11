@@ -1,5 +1,4 @@
 import logging
-from typing import TYPE_CHECKING
 
 from ._consts import RH_SAML_URL, AwsRegion
 from ._core import (
@@ -10,9 +9,7 @@ from ._core import (
     select_aws_account,
 )
 from ._exceptions import NoAwsAccountError, NoKerberosTicketError
-
-if TYPE_CHECKING:
-    from ._models import AwsCredentials
+from ._models import AwsCredentials
 
 logger = logging.getLogger(__name__)
 

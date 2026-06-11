@@ -5,7 +5,7 @@ import platform
 import shlex
 import sys
 import urllib
-from collections.abc import Generator  # noqa: TC003
+from collections.abc import Generator
 from datetime import UTC
 from datetime import datetime as dt
 from enum import StrEnum
