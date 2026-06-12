@@ -163,6 +163,16 @@ $ aws s3 ls
 ...
 ```
 
+You can also use the `shared_credentials` output format to write the credentials to a file and set the `AWS_SHARED_CREDENTIALS_FILE` environment variable:
+
+```shell
+$ export $(rh-aws-saml-login --output shared_credentials <ACCOUNT_NAME>)
+$ aws s3 ls
+...
+```
+
+This writes the credentials to a temporary file in the standard AWS shared credentials format and outputs the path via `AWS_SHARED_CREDENTIALS_FILE`.
+
 ## Environment Variables
 
 `rh-aws-saml-login` exposes the following environment variables:

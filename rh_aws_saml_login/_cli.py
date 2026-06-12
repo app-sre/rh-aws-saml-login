@@ -1,9 +1,11 @@
+import configparser
 import json
 import logging
 import os
 import platform
 import shlex
 import sys
+import tempfile
 import urllib
 from collections.abc import Generator
 from datetime import UTC
@@ -59,6 +61,7 @@ class OutputFormat(StrEnum):
 
     JSON = "json"
     ENV = "env"
+    SHARED_CREDENTIALS = "shared_credentials"
 
 
 def get_platform_open() -> str:
@@ -167,6 +170,18 @@ def display_credentials(
         case OutputFormat.ENV:
             for key, value in env_vars.items():
                 print(f"{key}={value}")  # noqa: T201
+        case OutputFormat.SHARED_CREDENTIALS:
+            config = configparser.ConfigParser()
+            config["default"] = {
+                "aws_access_key_id": credentials.access_key,
+                "aws_secret_access_key": credentials.secret_key,
+                "aws_session_token": credentials.session_token,
+            }
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".credentials", delete=False, encoding="utf-8"
+            ) as f:
+                config.write(f)
+            print(f"AWS_SHARED_CREDENTIALS_FILE={f.name}")  # noqa: T201
 
 
 def write_accounts_cache(accounts: list[str]) -> None:
