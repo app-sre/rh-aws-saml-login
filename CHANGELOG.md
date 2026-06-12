@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.0
+
+### Features
+
+* Add `--output shared_credentials` format that writes AWS credentials to a standard shared credentials file and outputs `AWS_SHARED_CREDENTIALS_FILE=<path>` for use with `export $(...)` #803
+
 ## 0.14.0
 
 ### Breaking Changes
