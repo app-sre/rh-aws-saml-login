@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.1
+
+### Chore
+
+* Upgrade typer to >=0.26.7 and drop explicit `click` dependency (now bundled with typer)
+
 ## 0.15.0
 
 ### Features
