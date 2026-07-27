@@ -5,13 +5,13 @@ import re
 import subprocess
 import sys
 import tempfile
-import xml.etree.ElementTree as ET  # noqa: S405
+import xml.etree.ElementTree as ET  # ruff: ignore[suspicious-xml-etree-import]
 
 import boto3
 import botocore
 import requests
 from iterfzf import iterfzf
-from pyquery import PyQuery as pq  # noqa: N813
+from pyquery import PyQuery as pq  # ruff: ignore[camelcase-imported-as-lowercase]
 from requests_gssapi import HTTPSPNEGOAuth
 
 from ._models import AwsAccount, AwsCredentials
@@ -60,7 +60,7 @@ def get_saml_auth(url: str) -> tuple[str, str]:
 def get_single_account_from_saml(saml_token: str) -> AwsAccount | None:
     """Return an AWS account from the SAML token if exactly one role is found."""
     saml_response_xml = base64.b64decode(saml_token).decode("utf-8")
-    root = ET.fromstring(saml_response_xml)  # noqa: S314
+    root = ET.fromstring(saml_response_xml)  # ruff: ignore[suspicious-xml-element-tree-usage]
     namespaces = {
         "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
         "saml": "urn:oasis:names:tc:SAML:2.0:assertion",

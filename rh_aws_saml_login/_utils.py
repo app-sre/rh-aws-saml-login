@@ -32,7 +32,7 @@ def bye() -> None:
 
 
 def enable_requests_logging() -> None:
-    from http.client import HTTPConnection  # noqa: PLC0415
+    from http.client import HTTPConnection  # ruff: ignore[import-outside-top-level]
 
     HTTPConnection.debuglevel = 1
     logging.getLogger().setLevel(logging.DEBUG)
@@ -52,6 +52,6 @@ def run(
     shell_env = copy.deepcopy(os.environ)
     if env:
         shell_env.update(env)
-    return subprocess.run(  # noqa: S603
+    return subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true]
         cmd, shell=shell, check=check, env=shell_env, capture_output=capture_output
     )

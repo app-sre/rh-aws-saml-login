@@ -166,10 +166,10 @@ def display_credentials(
     env_vars = get_export_environment_variables(account, credentials, region)
     match output:
         case OutputFormat.JSON:
-            print(json.dumps(env_vars, indent=2))  # noqa: T201
+            print(json.dumps(env_vars, indent=2))  # ruff: ignore[print]
         case OutputFormat.ENV:
             for key, value in env_vars.items():
-                print(f"{key}={value}")  # noqa: T201
+                print(f"{key}={value}")  # ruff: ignore[print]
         case OutputFormat.SHARED_CREDENTIALS:
             config = configparser.ConfigParser()
             config["default"] = {
@@ -181,7 +181,7 @@ def display_credentials(
                 mode="w", suffix=".credentials", delete=False, encoding="utf-8"
             ) as f:
                 config.write(f)
-            print(f"AWS_SHARED_CREDENTIALS_FILE={f.name}")  # noqa: T201
+            print(f"AWS_SHARED_CREDENTIALS_FILE={f.name}")  # ruff: ignore[print]
 
 
 def write_accounts_cache(accounts: list[str]) -> None:
@@ -196,7 +196,7 @@ def read_accounts_cache() -> list[str]:
     return []
 
 
-def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str]:  # noqa: ARG001
+def complete_account(ctx: typer.Context, incomplete: str) -> Generator[str]:  # ruff: ignore[unused-function-argument]
     for name in read_accounts_cache():
         if name.startswith(incomplete):
             yield name
@@ -209,7 +209,7 @@ def version_callback(*, value: bool) -> None:
 
 
 @app.command(epilog="Made with [red]:heart:[/] by [blue]https://github.com/app-sre[/]")
-def cli(  # noqa: PLR0917
+def cli(  # ruff: ignore[too-many-positional-arguments]
     open_command: Annotated[
         str,
         typer.Option(
@@ -307,7 +307,7 @@ def cli(  # noqa: PLR0917
             envvar="RH_DISPLAY_BANNER",
         ),
     ] = True,
-    version: Annotated[  # noqa: ARG001
+    version: Annotated[  # ruff: ignore[unused-function-argument]
         bool | None, typer.Option("--version", callback=version_callback)
     ] = None,
 ) -> None:
@@ -355,7 +355,7 @@ def cli(  # noqa: PLR0917
     write_accounts_cache(accounts)
 
 
-def _main(  # noqa: PLR0917
+def _main(  # ruff: ignore[too-many-positional-arguments]
     account_name: str | None,
     role: str | None,
     region: str,

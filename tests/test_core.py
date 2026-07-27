@@ -1,6 +1,6 @@
 """Tests for the core module."""
 
-# ruff: noqa: PLC2701
+# ruff: file-ignore[import-private-name]
 import base64
 from collections.abc import Callable
 from pathlib import Path
@@ -93,7 +93,7 @@ def test_get_saml_auth(requests_mock: RequestsMocker, fx: Callable) -> None:
     requests_mock.get(url, text=fx("saml.html"))
     aws_url, saml_token = get_saml_auth(url)
     assert aws_url == "http://localhost:8000/aws-sso.html"
-    assert saml_token == "fake-saml-token"  # noqa: S105
+    assert saml_token == "fake-saml-token"  # ruff: ignore[hardcoded-password-string]
 
 
 def test_get_aws_accounts(
