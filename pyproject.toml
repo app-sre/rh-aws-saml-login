@@ -67,30 +67,30 @@ preview = true
 select = ["ALL"]
 ignore = [
     "CPY",     # Missing copyright header
-    "D107",    # Missing docstring in __init__
-    "D203",    # 1 blank line required before class docstring
-    "D211",    # No blank lines allowed before class docstring
-    "D212",    # multi-line-summary-first-line
-    "D213",    # multi-line-summary-second-line
+    "undocumented-public-init",    # Missing docstring in __init__
+    "incorrect-blank-line-before-class",    # 1 blank line required before class docstring
+    "blank-line-before-class",    # No blank lines allowed before class docstring
+    "multi-line-summary-first-line",    # multi-line-summary-first-line
+    "multi-line-summary-second-line",    # multi-line-summary-second-line
     "D4",      # Doc string style
-    "E501",    # Line too long
-    "PLR0913", # Too many arguments in function definition
-    "S101",    # Use of assert detected. Pytest uses assert
-    "S404",    # subprocess import
-    "TRY300",  # try-consider-else
+    "line-too-long",    # Line too long
+    "too-many-arguments", # Too many arguments in function definition
+    "assert",    # Use of assert detected. Pytest uses assert
+    "suspicious-subprocess-import",    # subprocess import
+    "try-consider-else",  # try-consider-else
     # pydoclint
     "DOC",
     # May conflict with the formatter, https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
-    "W191",
-    "E111",
-    "E114",
-    "E117",
-    "D206",
-    "D300",
+    "tab-indentation",
+    "indentation-with-invalid-multiple",
+    "indentation-with-invalid-multiple-comment",
+    "over-indented",
+    "docstring-tab-indentation",
+    "triple-single-quotes",
     "Q",
-    "COM812",
-    "COM819",
-    "ISC001",
+    "missing-trailing-comma",
+    "prohibited-trailing-comma",
+    "single-line-implicit-string-concatenation",
 ]
 
 [tool.ruff.format]

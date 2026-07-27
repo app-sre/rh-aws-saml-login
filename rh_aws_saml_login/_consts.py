@@ -5,7 +5,7 @@ RH_SAML_URL = (
 )
 
 
-# boto3.session.Session().get_available_regions("rds")  # noqa: ERA001
+# boto3.session.Session().get_available_regions("rds")  # ruff: ignore[commented-out-code]
 class AwsRegion(StrEnum):
     AF_SOUTH_1 = "af-south-1"
     AP_EAST_1 = "ap-east-1"

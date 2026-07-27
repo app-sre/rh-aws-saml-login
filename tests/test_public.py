@@ -1,5 +1,5 @@
 """Test all public API methods are available."""
-# ruff: noqa: D103, PLC0415
+# ruff: file-ignore[undocumented-public-function, import-outside-top-level]
 
 from dataclasses import is_dataclass
 
