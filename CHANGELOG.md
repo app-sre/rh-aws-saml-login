@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.2
+
+### Bug Fixes
+
+* `--assume-uid` now uses the first-hop SAML user identity (e.g. `khnguyen`) as `RoleSessionName` for the second `AssumeRole` call instead of the source AWS account name, making sessions user-attributable in CloudTrail. The `SourceIdentity` of the first hop is retained and propagated when available. https://redhat.atlassian.net/browse/APPSRE-15660
+
 ## 0.15.1
 
 ### Chore

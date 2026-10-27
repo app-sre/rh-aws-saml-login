@@ -204,6 +204,9 @@ def assume_role_with_saml(account: AwsAccount, saml_token: str) -> AwsCredential
         expiration=response["Credentials"]["Expiration"],
         session_timeout_seconds=account.session_timeout_seconds,
         region=account.region,
+        assumed_role_user_arn=response["AssumedRoleUser"]["Arn"],
+        assumed_role_user_id=response["AssumedRoleUser"]["AssumedRoleId"],
+        source_identity=response.get("SourceIdentity"),
     )
 
 
@@ -216,10 +219,15 @@ def assume_role(account: AwsAccount, credentials: AwsCredentials) -> AwsCredenti
         aws_session_token=credentials.session_token,
         region_name=account.region,
     )
-    response = sts.assume_role(
-        RoleArn=account.role_arn,
-        RoleSessionName=account.role_name,
-    )
+    # keep the first-hop user identity as session name so the second hop stays
+    # user-attributable in CloudTrail instead of showing the source account name
+    assume_role_kwargs: dict[str, str] = {
+        "RoleArn": account.role_arn,
+        "RoleSessionName": credentials.user_identity or account.role_name,
+    }
+    if credentials.source_identity:
+        assume_role_kwargs["SourceIdentity"] = credentials.source_identity
+    response = sts.assume_role(**assume_role_kwargs)
     return AwsCredentials(
         access_key=response["Credentials"]["AccessKeyId"],
         secret_key=response["Credentials"]["SecretAccessKey"],
@@ -227,4 +235,7 @@ def assume_role(account: AwsAccount, credentials: AwsCredentials) -> AwsCredenti
         expiration=response["Credentials"]["Expiration"],
         session_timeout_seconds=account.session_timeout_seconds,
         region=account.region,
+        assumed_role_user_arn=response["AssumedRoleUser"]["Arn"],
+        assumed_role_user_id=response["AssumedRoleUser"]["AssumedRoleId"],
+        source_identity=response.get("SourceIdentity"),
     )
