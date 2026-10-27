@@ -3,13 +3,26 @@
 # ruff: file-ignore[import-private-name]
 import base64
 from collections.abc import Callable
+from datetime import UTC
+from datetime import datetime as dt
 from pathlib import Path
+from typing import Any
+from unittest import mock
 
+import boto3
 import pytest
+from botocore.exceptions import ClientError
+from botocore.stub import Stubber
 from requests_mock import Mocker as RequestsMocker
 
-from rh_aws_saml_login._core import get_aws_accounts, get_saml_auth, select_aws_account
-from rh_aws_saml_login._models import AwsAccount
+from rh_aws_saml_login._core import (
+    assume_role,
+    assume_role_with_saml,
+    get_aws_accounts,
+    get_saml_auth,
+    select_aws_account,
+)
+from rh_aws_saml_login._models import AwsAccount, AwsCredentials
 
 
 @pytest.fixture
@@ -150,3 +163,231 @@ def test_select_aws_account(accounts: list[AwsAccount]) -> None:
     assert not account
     account = select_aws_account(accounts, "non-existent-account", "non-existent-role")
     assert not account
+
+
+@pytest.fixture
+def sts_stubber(monkeypatch: pytest.MonkeyPatch) -> Stubber:
+    """Patch the boto3 client used by _core with a stubbed STS client."""
+    client = boto3.client("sts", region_name="us-east-1")
+    stubber = Stubber(client)
+    stubber.activate()
+    mock_boto3 = mock.Mock()
+    mock_boto3.client.return_value = client
+    monkeypatch.setattr("rh_aws_saml_login._core.boto3", mock_boto3)
+    return stubber
+
+
+@pytest.fixture
+def sts_credentials() -> dict[str, Any]:
+    """Return a fake STS credentials response block."""
+    return {
+        "AccessKeyId": "ASIAEXAMPLEACCESSKEY",
+        "SecretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "SessionToken": "EXAMPLESESSIONTOKEN",
+        "Expiration": dt(2026, 1, 1, 12, 0, 0, tzinfo=UTC),
+    }
+
+
+@pytest.fixture
+def sts_account() -> AwsAccount:
+    """Return an AWS account with a session timeout valid for STS parameter validation."""
+    return AwsAccount(
+        name="account-1",
+        uid="1234567890",
+        role_name="admin-role",
+        role_arn="arn:aws:iam::1234567890:role/admin-role",
+        session_timeout_seconds=900,
+        region="us-east-1",
+    )
+
+
+@pytest.fixture
+def first_hop_credentials(sts_account: AwsAccount) -> AwsCredentials:
+    """Return credentials as returned by a first-hop AssumeRoleWithSAML call."""
+    account = sts_account
+    return AwsCredentials(
+        access_key="ASIAEXAMPLEACCESSKEY",
+        secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",  # ruff: ignore[hardcoded-password-func-arg]
+        session_token="EXAMPLESESSIONTOKEN",  # ruff: ignore[hardcoded-password-func-arg]
+        expiration=dt(2026, 1, 1, 12, 0, 0, tzinfo=UTC),
+        session_timeout_seconds=account.session_timeout_seconds,
+        region=account.region,
+        assumed_role_user_arn=f"arn:aws:sts::{account.uid}:assumed-role/{account.role_name}/khnguyen",
+        assumed_role_user_id=f"AROAEXAMPLE:{account.role_name}",
+    )
+
+
+def test_assume_role_with_saml_preserves_user_identity(
+    sts_stubber: Stubber, sts_credentials: dict[str, Any], sts_account: AwsAccount
+) -> None:
+    """Test that the user identity of the first-hop SAML response is retained."""
+    account = sts_account
+    assumed_role_user_arn = (
+        f"arn:aws:sts::{account.uid}:assumed-role/{account.role_name}/khnguyen"
+    )
+    sts_stubber.add_response(
+        "assume_role_with_saml",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": assumed_role_user_arn,
+                "AssumedRoleId": f"AROAEXAMPLE:{account.role_name}",
+            },
+            "SourceIdentity": "khnguyen@redhat.com",
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "PrincipalArn": account.principle_arn,
+            "SAMLAssertion": "saml-token",
+            "DurationSeconds": account.session_timeout_seconds,
+        },
+    )
+    credentials = assume_role_with_saml(account, "saml-token")
+    assert credentials.assumed_role_user_arn == assumed_role_user_arn
+    assert credentials.assumed_role_user_id == f"AROAEXAMPLE:{account.role_name}"
+    assert credentials.source_identity == "khnguyen@redhat.com"
+    assert credentials.user_identity == "khnguyen@redhat.com"
+
+
+def test_assume_role_uses_user_identity_as_session_name(
+    sts_stubber: Stubber,
+    sts_credentials: dict[str, Any],
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role uses the first-hop user identity as RoleSessionName."""
+    account = sts_account
+    assumed_role_user_arn = f"arn:aws:sts::{account.uid}:assumed-role/OrganizationAccountAccessRole/khnguyen"
+    sts_stubber.add_response(
+        "assume_role",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": assumed_role_user_arn,
+                "AssumedRoleId": "AROAEXAMPLE:khnguyen",
+            },
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen",
+        },
+    )
+    credentials = assume_role(account, first_hop_credentials)
+    assert credentials.access_key == "ASIAEXAMPLEACCESSKEY"
+    assert credentials.assumed_role_user_arn == assumed_role_user_arn
+    assert credentials.source_identity is None
+
+
+def test_assume_role_propagates_source_identity(
+    sts_stubber: Stubber,
+    sts_credentials: dict[str, Any],
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role propagates the first-hop SourceIdentity."""
+    account = sts_account
+    first_hop_credentials.source_identity = "khnguyen@redhat.com"
+    sts_stubber.add_response(
+        "assume_role",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::1234567890:assumed-role/OrganizationAccountAccessRole/khnguyen@redhat.com",
+                "AssumedRoleId": "AROAEXAMPLE:khnguyen@redhat.com",
+            },
+            "SourceIdentity": "khnguyen@redhat.com",
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen@redhat.com",
+            "SourceIdentity": "khnguyen@redhat.com",
+        },
+    )
+    credentials = assume_role(account, first_hop_credentials)
+    assert credentials.source_identity == "khnguyen@redhat.com"
+
+
+def test_assume_role_falls_back_to_role_name(
+    sts_stubber: Stubber,
+    sts_credentials: dict[str, Any],
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role falls back to the role name without a user identity."""
+    account = sts_account
+    first_hop_credentials.assumed_role_user_arn = None
+    first_hop_credentials.assumed_role_user_id = None
+    sts_stubber.add_response(
+        "assume_role",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": f"arn:aws:sts::{account.uid}:assumed-role/{account.role_name}/admin-role",
+                "AssumedRoleId": f"AROAEXAMPLE:{account.role_name}",
+            },
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": account.role_name,
+        },
+    )
+    credentials = assume_role(account, first_hop_credentials)
+    assert credentials.access_key == "ASIAEXAMPLEACCESSKEY"
+
+
+def test_assume_role_retries_without_source_identity_on_access_denied(
+    sts_stubber: Stubber,
+    sts_credentials: dict[str, Any],
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role retries without SourceIdentity if the role's trust policy rejects it."""
+    account = sts_account
+    first_hop_credentials.source_identity = "khnguyen@redhat.com"
+    sts_stubber.add_client_error(
+        "assume_role",
+        service_error_code="AccessDenied",
+        service_message="not authorized to perform: sts:SetSourceIdentity",
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen@redhat.com",
+            "SourceIdentity": "khnguyen@redhat.com",
+        },
+    )
+    sts_stubber.add_response(
+        "assume_role",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::1234567890:assumed-role/OrganizationAccountAccessRole/khnguyen@redhat.com",
+                "AssumedRoleId": "AROAEXAMPLE:khnguyen@redhat.com",
+            },
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen@redhat.com",
+        },
+    )
+    credentials = assume_role(account, first_hop_credentials)
+    assert credentials.access_key == "ASIAEXAMPLEACCESSKEY"
+    assert credentials.source_identity is None
+
+
+def test_assume_role_raises_on_unrelated_access_denied(
+    sts_stubber: Stubber,
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role re-raises AccessDenied errors unrelated to SourceIdentity."""
+    account = sts_account
+    sts_stubber.add_client_error(
+        "assume_role",
+        service_error_code="AccessDenied",
+        service_message="not authorized to perform: sts:AssumeRole",
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen",
+        },
+    )
+    with pytest.raises(ClientError):
+        assume_role(account, first_hop_credentials)

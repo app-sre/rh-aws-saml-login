@@ -24,3 +24,16 @@ class AwsCredentials:
     expiration: dt
     session_timeout_seconds: int
     region: str
+    assumed_role_user_arn: str | None = None
+    assumed_role_user_id: str | None = None
+    source_identity: str | None = None
+
+    @property
+    def user_identity(self) -> str | None:
+        """Return the user-attributable identity of this session, if available."""
+        if self.source_identity:
+            return self.source_identity
+        if self.assumed_role_user_arn:
+            # arn:aws:sts::123456789012:assumed-role/<role-name>/<session-name>
+            return self.assumed_role_user_arn.rsplit("/", maxsplit=1)[-1]
+        return None
