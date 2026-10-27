@@ -11,6 +11,7 @@ from unittest import mock
 
 import boto3
 import pytest
+from botocore.exceptions import ClientError
 from botocore.stub import Stubber
 from requests_mock import Mocker as RequestsMocker
 
@@ -332,3 +333,61 @@ def test_assume_role_falls_back_to_role_name(
     )
     credentials = assume_role(account, first_hop_credentials)
     assert credentials.access_key == "ASIAEXAMPLEACCESSKEY"
+
+
+def test_assume_role_retries_without_source_identity_on_access_denied(
+    sts_stubber: Stubber,
+    sts_credentials: dict[str, Any],
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role retries without SourceIdentity if the role's trust policy rejects it."""
+    account = sts_account
+    first_hop_credentials.source_identity = "khnguyen@redhat.com"
+    sts_stubber.add_client_error(
+        "assume_role",
+        service_error_code="AccessDenied",
+        service_message="not authorized to perform: sts:SetSourceIdentity",
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen@redhat.com",
+            "SourceIdentity": "khnguyen@redhat.com",
+        },
+    )
+    sts_stubber.add_response(
+        "assume_role",
+        {
+            "Credentials": sts_credentials,
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::1234567890:assumed-role/OrganizationAccountAccessRole/khnguyen@redhat.com",
+                "AssumedRoleId": "AROAEXAMPLE:khnguyen@redhat.com",
+            },
+        },
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen@redhat.com",
+        },
+    )
+    credentials = assume_role(account, first_hop_credentials)
+    assert credentials.access_key == "ASIAEXAMPLEACCESSKEY"
+    assert credentials.source_identity is None
+
+
+def test_assume_role_raises_on_unrelated_access_denied(
+    sts_stubber: Stubber,
+    sts_account: AwsAccount,
+    first_hop_credentials: AwsCredentials,
+) -> None:
+    """Test that assume_role re-raises AccessDenied errors unrelated to SourceIdentity."""
+    account = sts_account
+    sts_stubber.add_client_error(
+        "assume_role",
+        service_error_code="AccessDenied",
+        service_message="not authorized to perform: sts:AssumeRole",
+        expected_params={
+            "RoleArn": account.role_arn,
+            "RoleSessionName": "khnguyen",
+        },
+    )
+    with pytest.raises(ClientError):
+        assume_role(account, first_hop_credentials)

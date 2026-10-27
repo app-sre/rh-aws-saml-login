@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET  # ruff: ignore[suspicious-xml-etree-import]
 import boto3
 import botocore
 import requests
+from botocore.exceptions import ClientError
 from iterfzf import iterfzf
 from pyquery import PyQuery as pq  # ruff: ignore[camelcase-imported-as-lowercase]
 from requests_gssapi import HTTPSPNEGOAuth
@@ -227,7 +228,19 @@ def assume_role(account: AwsAccount, credentials: AwsCredentials) -> AwsCredenti
     }
     if credentials.source_identity:
         assume_role_kwargs["SourceIdentity"] = credentials.source_identity
-    response = sts.assume_role(**assume_role_kwargs)
+    try:
+        response = sts.assume_role(**assume_role_kwargs)
+    except ClientError as exc:
+        # the role's trust policy may not allow sts:SetSourceIdentity; retry
+        # once without it rather than breaking a previously working login
+        if (
+            exc.response["Error"]["Code"] == "AccessDenied"
+            and "SourceIdentity" in assume_role_kwargs
+        ):
+            del assume_role_kwargs["SourceIdentity"]
+            response = sts.assume_role(**assume_role_kwargs)
+        else:
+            raise
     return AwsCredentials(
         access_key=response["Credentials"]["AccessKeyId"],
         secret_key=response["Credentials"]["SecretAccessKey"],
